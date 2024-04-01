@@ -1,0 +1,51 @@
+{
+  "name": "zjkiza/dto-mapper",
+  "type": "symfony-bundle",
+  "description": "Mapping entity to dto and dto to entity.",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Zoran Jankovic",
+      "email": "zjkiza@gmail.com"
+    }
+  ],
+  "require": {
+    "php": ">=8.2",
+    "doctrine/orm": "^2.17",
+    "doctrine/collections": "^1.5 || ^2.1",
+    "ramsey/uuid-doctrine": "^2.0",
+    "doctrine/persistence": "^2.4 || ^3",
+    "symfony/dependency-injection": "^5.0|^6.0",
+    "symfony/config": "^5.0|^6.0",
+    "symfony/console": "^5.0|^6.0",
+    "symfony/http-kernel": "^5.0|^6.0"
+  },
+  "autoload": {
+      "psr-4": {
+          "Zjk\\DtoMapper\\": "src/"
+    },
+    "files": [
+      "src/functions.php"
+    ]
+  },
+  "autoload-dev": {
+      "psr-4": {
+          "Zjk\\DtoMapper\\Tests\\": "tests/"
+      },
+      "files": [
+      "src/functions.php"
+    ]
+  },
+  "require-dev": {
+    "symfony/phpunit-bridge": "^6.0",
+    "phpunit/phpunit": "^9.6",
+    "matthiasnoback/symfony-dependency-injection-test": "^5.1",
+    "friendsofphp/php-cs-fixer": "^3.52",
+    "phpstan/phpstan": "^1.10"
+  },
+  "scripts": {
+    "phpunit": "XDEBUG_MODE=coverage vendor/bin/simple-phpunit --testdox --coverage-html ./build/phpunit",
+    "phpstan": "vendor/bin/phpstan analyse -v",
+    "php-cs-fixer": "vendor/bin/php-cs-fixer fix --diff --verbose --show-progress=dots --allow-risky=yes"
+  }
+}

@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<container
+        xmlns="http://symfony.com/schema/dic/services"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd"
+>
+
+    <services>
+        <!-- Configure Registry  -->
+        <service
+                id="Zjk\DtoMapper\Repository\DoctrineRepositoryRegistry"
+                class="Zjk\DtoMapper\Repository\DoctrineRepositoryRegistry"
+        >
+            <argument
+                    type="service"
+                    id="Doctrine\Persistence\ManagerRegistry"
+            />
+        </service>
+
+        <service
+                id="Zjk\DtoMapper\Contract\RepositoryInterface"
+                alias="Zjk\DtoMapper\Repository\DoctrineRepositoryRegistry"
+        />
+
+        <!-- Configure Builder -->
+        <service
+                id="Zjk\DtoMapper\Builder\Create\PropertyBuilderCreate"
+                class="Zjk\DtoMapper\Builder\Create\PropertyBuilderCreate"
+        />
+
+        <service
+                id="Zjk\DtoMapper\Builder\Create\EntityMetadataBuilderCreate"
+                class="Zjk\DtoMapper\Builder\Create\EntityMetadataBuilderCreate"
+        />
+
+        <service
+                id="Zjk\DtoMapper\Metadata\ReflectionMetadata"
+                class="Zjk\DtoMapper\Metadata\ReflectionMetadata"
+        >
+            <argument
+                    type="service"
+                    id="Zjk\DtoMapper\Builder\Create\PropertyBuilderCreate"
+            />
+            <argument
+                    type="service"
+                    id="Zjk\DtoMapper\Builder\Create\EntityMetadataBuilderCreate"
+            />
+        </service>
+
+        <!-- Configure Transformer -->
+
+        <service
+                id="Zjk\DtoMapper\Transformer\UuidTransformer"
+                class="Zjk\DtoMapper\Transformer\UuidTransformer"
+        >
+            <tag name="zjk.mapper.transformer" />
+        </service>
+
+        <service
+                id="Zjk\DtoMapper\Transformer\UpperTransformer"
+                class="Zjk\DtoMapper\Transformer\UpperTransformer"
+        >
+            <tag name="zjk.mapper.transformer" />
+        </service>
+
+
+        <service
+                id="Zjk\DtoMapper\Transformer\Transformer"
+                class="Zjk\DtoMapper\Transformer\Transformer"
+        >
+            <argument
+                    type="service"
+                    id="Zjk\DtoMapper\Contract\DefaultAccessorInterface"
+            />
+            <argument
+                    type="tagged_iterator"
+                    tag="zjk.mapper.transformer"
+            />
+        </service>
+
+        <service
+                id="Zjk\DtoMapper\Contract\TransformerInterface"
+                alias="Zjk\DtoMapper\Transformer\Transformer"
+        />
+
+        <!-- Configure Accessor property -->
+        <service
+                id="Zjk\DtoMapper\Accessor\Property\PrivatePropertyAccess"
+                class="Zjk\DtoMapper\Accessor\Property\PrivatePropertyAccess"
+        />
+
+        <service
+                id="Zjk\DtoMapper\Accessor\Property\DoctrineProxyPropertyAccessor"
+                class="Zjk\DtoMapper\Accessor\Property\DoctrineProxyPropertyAccessor"
+        >
+            <argument
+                    type="service"
+                    id="Zjk\DtoMapper\Accessor\Property\PrivatePropertyAccess"
+            />
+        </service>
+
+        <service
+                id="Zjk\DtoMapper\Contract\PropertyAccessInterface"
+                alias="Zjk\DtoMapper\Accessor\Property\DoctrineProxyPropertyAccessor"
+        />
+
+        <!-- Configure Accessor method -->
+        <service
+                id="Zjk\DtoMapper\Accessor\Method\PrivateMethodAccess"
+                class="Zjk\DtoMapper\Accessor\Method\PrivateMethodAccess"
+        />
+
+        <service
+                id="Zjk\DtoMapper\Accessor\Method\DoctrineProxyMethodAccessor"
+                class="Zjk\DtoMapper\Accessor\Method\DoctrineProxyMethodAccessor"
+        >
+            <argument
+                    type="service"
+                    id="Zjk\DtoMapper\Accessor\Method\PrivateMethodAccess"
+            />
+        </service>
+
+        <service
+                id="Zjk\DtoMapper\Contract\MethodAccessorInterface"
+                alias="Zjk\DtoMapper\Accessor\Method\DoctrineProxyMethodAccessor"
+        />
+
+        <!-- Configure Accessor default -->
+        <service
+                id="Zjk\DtoMapper\Accessor\DefaultAccessor"
+                class="Zjk\DtoMapper\Accessor\DefaultAccessor"
+        >
+            <argument
+                    type="service"
+                    id="Zjk\DtoMapper\Contract\MethodAccessorInterface"
+            />
+            <argument
+                    type="service"
+                    id="Zjk\DtoMapper\Contract\PropertyAccessInterface"
+            />
+        </service>
+        <service
+                id="Zjk\DtoMapper\Contract\DefaultAccessorInterface"
+                alias="Zjk\DtoMapper\Accessor\DefaultAccessor"
+        />
+
+        <!-- Configure Mapper -->
+        <service
+                id="Zjk\DtoMapper\Mapper"
+                class="Zjk\DtoMapper\Mapper"
+                public="true"
+        >
+            <argument
+                    type="service"
+                    id="Doctrine\ORM\EntityManagerInterface"
+            />
+            <argument
+                    type="service"
+                    id="Zjk\DtoMapper\Contract\RepositoryInterface"
+            />
+            <argument
+                    type="service"
+                    id="Zjk\DtoMapper\Metadata\ReflectionMetadata"
+            />
+            <argument
+                    type="service"
+                    id="Zjk\DtoMapper\Contract\DefaultAccessorInterface"
+            />
+            <argument
+                    type="service"
+                    id="Zjk\DtoMapper\Contract\TransformerInterface"
+            />
+        </service>
+
+        <service
+                id="Zjk\DtoMapper\Contract\MapperInterface"
+                alias="Zjk\DtoMapper\Mapper"
+                public="true"
+        />
+
+    </services>
+
+</container>

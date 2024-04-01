@@ -1,6 +1,5 @@
 # Mapper
 
-
 Mapping entity to dto, dto to entity, entity collection to dto and dto collection to entity.  
 Bundle is based on using setters and getters from entity. 
 In the next versions, it is also planned to support that all data can be sent via the entity constructor.
