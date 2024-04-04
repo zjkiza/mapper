@@ -1,0 +1,10 @@
+version: '3.7'
+
+services:
+
+  php_bundle_2:
+    container_name: php_bundle_2
+    build:
+      context: './'
+    volumes:
+      -  './:/var/www/html'

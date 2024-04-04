@@ -1,4 +1,4 @@
-# Mapper
+# DTO Mapper
 
 Mapping entity to dto, dto to entity, entity collection to dto and dto collection to entity.  
 Bundle is based on using setters and getters from entity. 
@@ -23,7 +23,31 @@ return [
 
 2. Symfony entities must implement interface `Zjk\DtoMapper\Contract\IdentifierInterface`.
 
-3. To work with the mapper, it is necessary to inject the `Zjk\DtoMapper\Contract\MapperInterface` service in the constructor. The mapper has four methods depending on what data mapping you are doing.
+3. With entities, the id must be created via the constructor. 
+
+  Example:
+
+  ```php
+  
+  class User implements IdentifierInterface
+  {
+      ...
+        
+     #[ORM\Id]
+     #[ORM\GeneratedValue(strategy: 'NONE')]
+     #[ORM\Column(type: 'uuid', unique: true)]
+     private UuidInterface $id;
+      
+     public function __construct(?UuidInterface $id = null)
+     {
+        $this->id = $id ?? Uuid::uuid4();
+     }
+     
+     ...
+  }
+  ```
+
+4. To work with the mapper, it is necessary to inject the `Zjk\DtoMapper\Contract\MapperInterface` service in the constructor. The mapper has four methods depending on what data mapping you are doing.
 - `fromCollectionEntityToDto(iterable $collections, object|string $target): array`
 - `fromCollectionDtoToEntity(iterable $collections, object|string $target): array`
 - `fromObjectEntityToDto(object $entity, object|string $dto): object`
@@ -34,8 +58,20 @@ return [
 - It is mandatory to define an attribute for the entity on the class.
 
   ```php
-  
+ 
   #[Entity(name: Post::class)]
+  class PostDto
+  {
+  
+  }
+  ```
+
+- When a new entity is passed through a Dto object, it is recommended to use attribute `Zjk\DtoMapper\Attribute\NewEntity` above the DTO object. The mapper is then fast, because it will not waste time to check if that entity exists, but will immediately carry it.
+  Example:
+  ```php
+ 
+  #[Entity(name: Post::class)]
+  #[NewEntity]
   class PostDto
   {
   
