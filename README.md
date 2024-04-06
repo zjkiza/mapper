@@ -66,7 +66,7 @@ return [
   }
   ```
 
-- When a new entity is passed through a Dto object, it is recommended to use attribute `Zjk\DtoMapper\Attribute\NewEntity` above the DTO object. The mapper is then fast, because it will not waste time to check if that entity exists, but will immediately carry it.
+- When a new entity is passed through a Dto object, it is recommended to use attribute `Zjk\DtoMapper\Attribute\NewEntity` above the DTO object. The mapper is then fast, because it will not waste time to check if that entity exists, but will create it immediately.
   Example:
   ```php
  
