@@ -18,7 +18,7 @@ interface RepositoryInterface
     /**
      * @template T of object
      *
-     * @param iterable<string|int> $identifiers
+     * @param iterable<mixed> $identifiers
      * @param class-string<T>      $entity
      *
      * @return iterable<T>

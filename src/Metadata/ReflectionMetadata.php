@@ -75,6 +75,8 @@ final class ReflectionMetadata
      * @template T of object
      *
      * @param \ReflectionClass<T> $reflectionClass
+     *
+     * @throws \ReflectionException
      */
     private function createDtosMapped(\ReflectionClass $reflectionClass): void
     {

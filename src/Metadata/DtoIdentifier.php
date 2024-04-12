@@ -11,9 +11,10 @@ namespace Zjk\DtoMapper\Metadata;
 final class DtoIdentifier
 {
     public function __construct(
+        protected string $dtoClass,
         protected string $entityClass,
         protected Property $property,
-        protected int|string|null $value
+        protected mixed $value
     ) {
     }
 
@@ -22,9 +23,14 @@ final class DtoIdentifier
         return $this->property;
     }
 
-    public function getValue(): int|string|null
+    public function getValue(): mixed
     {
         return $this->value;
+    }
+
+    public function getDtoClass(): string
+    {
+        return $this->dtoClass;
     }
 
     public function getEntityClass(): string
@@ -32,8 +38,8 @@ final class DtoIdentifier
         return $this->entityClass;
     }
 
-    public static function create(string $class, Property $property, int|string|null $value): self
+    public static function create(string $classDto, string $classEntity, Property $property, mixed $value): self
     {
-        return new self($class, $property, $value);
+        return new self($classDto, $classEntity, $property, $value);
     }
 }

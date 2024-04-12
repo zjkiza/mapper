@@ -14,6 +14,7 @@ use Zjk\DtoMapper\Contract\TransformerInterface;
 use Zjk\DtoMapper\Exception\InvalidClassImplementationException;
 use Zjk\DtoMapper\Exception\NotExistEntity;
 use Zjk\DtoMapper\Exception\RuntimeException;
+use Zjk\DtoMapper\Exception\TypeError;
 use Zjk\DtoMapper\Metadata\DtoIdentifier;
 use Zjk\DtoMapper\Metadata\LocalActionMetadata;
 use Zjk\DtoMapper\Metadata\Metadata;
@@ -356,9 +357,10 @@ final class Mapper implements MapperInterface
         /** @var Metadata $metadata */
         $metadata = $this->getMetadata($first);
 
+        /** @var array<int|string> $ids */
         $ids = \array_filter(
-            \array_map(fn (object $dto): int|string|null => $this->getDtoIdentifier($dto, $metadata)->getValue(), $inputArray),
-            static fn (int|string|null $value): bool => null !== $value
+            \array_map(fn (object $dto): mixed => $this->getDtoIdentifier($dto, $metadata)->getValue(), $inputArray),
+            static fn (mixed $value): bool => null !== $value
         );
 
         $collection = $this->repository->findAllByIdentifiers($ids, $class);
@@ -438,16 +440,15 @@ final class Mapper implements MapperInterface
             }
 
             if ($property->hasTransformerMetadata()) {
-                /** @var int|string|null $value */
                 $value = $this->transformer->reverse($dto, $property);
 
-                return DtoIdentifier::create($metadataDto->getEntityMetadata()->getClassName(), $property, $value);
+                return DtoIdentifier::create($dto::class, $metadataDto->getEntityMetadata()->getClassName(), $property, $value);
             }
 
             /** @var int|string|null $value */
             $value = $this->defaultAccessor->getValue($dto, $property);
 
-            return DtoIdentifier::create($metadataDto->getEntityMetadata()->getClassName(), $property, $value);
+            return DtoIdentifier::create($dto::class, $metadataDto->getEntityMetadata()->getClassName(), $property, $value);
         }
 
         throw new NotExistAttribute(\sprintf('IdentifierStrategy attribute is must be define (example: #[Identifier]) on property ID in object %s.', $dto::class));
@@ -459,7 +460,11 @@ final class Mapper implements MapperInterface
             $dtoIdentifier->getProperty()->getName() => $dtoIdentifier->getValue(),
         ];
 
-        return new $entityClassName(...$idValue);
+        try {
+            return new $entityClassName(...$idValue);
+        } catch (\TypeError $typeError) {
+            throw new TypeError(\sprintf('A new entity cannot be created. Id argument in dto "%s" must by same type with entity. Use the transformer on the ID property to convert it to a type like in entity "%s".', $dtoIdentifier->getDtoClass(), $dtoIdentifier->getEntityClass()));
+        }
     }
 
     /**

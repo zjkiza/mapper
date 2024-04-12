@@ -41,10 +41,17 @@
     "phpunit/phpunit": "^9.6",
     "matthiasnoback/symfony-dependency-injection-test": "^5.1",
     "friendsofphp/php-cs-fixer": "^3.52",
-    "phpstan/phpstan": "^1.10"
+    "phpstan/phpstan": "^1.10",
+    "symfony/framework-bundle": "^7.0",
+    "doctrine/doctrine-bundle": "^2.12",
+    "doctrine/doctrine-fixtures-bundle": "^3.5",
+    "dama/doctrine-test-bundle": "^8.0",
+    "symfony/property-info": "^7.0",
+    "phpstan/phpstan-phpunit": "^1.3",
+    "ekino/phpstan-banned-code": "^1.0"
   },
   "scripts": {
-    "phpunit": "XDEBUG_MODE=coverage vendor/bin/simple-phpunit --testdox --coverage-html ./build/phpunit",
+    "phpunit": "XDEBUG_MODE=coverage vendor/bin/phpunit --testdox --coverage-html ./build/phpunit",
     "phpstan": "vendor/bin/phpstan analyse -v",
     "php-cs-fixer": "vendor/bin/php-cs-fixer fix --diff --verbose --show-progress=dots --allow-risky=yes"
   }

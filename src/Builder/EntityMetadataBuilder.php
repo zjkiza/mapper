@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Zjk\DtoMapper\Builder;
 
+use Zjk\DtoMapper\Exception\NotExistAttribute;
 use Zjk\DtoMapper\Metadata\EntityMetadata;
 
 final class EntityMetadataBuilder
@@ -35,8 +36,13 @@ final class EntityMetadataBuilder
         return $this;
     }
 
-    public function build(): EntityMetadata
+    public function build(string $dtoClass): EntityMetadata
     {
+        NotExistAttribute::throwIf(
+            !isset($this->entity),
+            \sprintf('Entity attribute is must be define on dto class "%s"', $dtoClass)
+        );
+
         return EntityMetadata::create(
             $this->entity,
             $this->newEntity

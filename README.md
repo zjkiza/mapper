@@ -81,8 +81,7 @@ return [
 - If you have an ID property, it is mandatory to define `#[Identifier]`.
   Example:
   ```php
-    
-    #[Identifier]
+    #[Zjk\DtoMapper\Attribute\Identifier()]
     public ?string $id = null;  
    ```
 
@@ -155,19 +154,19 @@ class PostDto
 {
     #[Identifier]
     #[Transformer(name: UuidTransformer::class)]
-    public ?string $id = null
+    public ?string $id = null;
     
-    public ?string $title = null 
+    public ?string $title = null;
     
     #[Getter(methodName: 'getDescription')]
     #[Setter(methodName: 'setDescription')]
-    public ?string $descriptionRequest = null 
+    public ?string $descriptionRequest = null;
 
     #[Dto(className: UserDto::class)]
-    public ?User $user = null
+    public ?User $user = null;
     
     #[Ignore]
-    public ?string $location = null 
+    public ?string $location = null ;
 }
 ```
 
@@ -180,14 +179,14 @@ class PostDto
   {
     ...  
     #[Collection(className: CommentDto::class)]
-    public ?array comments = null
+    public ?array comments = null;
     ...
   }
   
     #[Entity(name: Comment::class)]
   class CommentDto 
   {
-    public string $description = null
+    public ?string $description = null;
   }
   ```
 
@@ -195,12 +194,24 @@ class PostDto
   Example:
   ```php
     #[Getter(methodName: 'getIdentifier')]
-    public ?string $id = null
+    public ?string $id = null;
   ```
 
 #### Configuration DTO in Entity :    
 
-- ID property must be defined wit attributes `#[Identifier]` and `#[Getter(methodName: 'getIdentifier')]`.
+- Create separate DTO classes for creating and editing entities, for good practice.
+
+- ID property must be defined wit attributes `#[Identifier]`.
+
+- Only when you create a new entity, you want to pass the ID, not the constructor to generate it. At the same time, you have different types of properties in the DTO is a string and the entity is a UUID, it is necessary to define the necessary transformer on the DOT id property.
+
+  ```php
+    #[Zjk\DtoMapper\Attribute\Identifier()]
+    #[Zjk\DtoMapper\Attribute\Transformer(UuidTransformer::class)]
+    public ?string $id = null;  
+   ```
+
+- When you edit an entity, be sure to check whether the entity id already exists in the database, otherwise if you pass an id that is not in the database, the mapper will try to create a new entity with the default values.
 
 - For relations, we add the attribute `Zjk\DtoMapper\Attribute\RepositoryClass` and property `entityClassName`, `addMethod`, `removeMethod` - are required. There we have two ways of setting:
 
@@ -235,14 +246,14 @@ class PostDto
   {
         #[Identifier]
         #[Getter(methodName: 'getIdentifier')]
-        public ?string $id = null
+        public ?string $id = null;
   
-        public ?string $title = null 
+        public ?string $title = null;
       
-        public ?string $descriptionRequest = null 
+        public ?string $descriptionRequest = null; 
   
         #[Dto(className: UserDto::class)]
-        public ?User $user = null
+        public ?User $user = null;
       
         #[RepositoryClass(
            entityClassName: Expert::class,
@@ -262,7 +273,7 @@ class PostDto
         public ?array $image = null;
   
         #[Ignore]
-        public ?string $location = null 
+        public ?string $location = null; 
   }
   ```
 Notice: when we finish mapping Dto to Entity, it is necessary to perform recording in the database with 

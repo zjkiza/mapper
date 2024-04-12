@@ -51,7 +51,7 @@ final class EntityMetadataBuilderCreate
             $this->strategy($attributeInstance, $builder);
         }
 
-        return $builder->build();
+        return $builder->build($reflectionClass->getName());
     }
 
     private function strategy(AttributeInterface $attributeInstance, EntityMetadataBuilder $builder): void

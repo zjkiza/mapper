@@ -6,7 +6,6 @@ namespace Zjk\DtoMapper\Exception;
 
 use Zjk\DtoMapper\Contract\ExceptionInterface;
 
-final class NotExistAttribute extends \Exception implements ExceptionInterface
+final class TypeError extends \TypeError implements ExceptionInterface
 {
-    use ThrowIfTrait;
 }
