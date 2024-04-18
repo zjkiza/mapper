@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Zjk\DtoMapper\Builder;
 
-use Zjk\DtoMapper\Metadata\LocalActionMetadata;
+use Zjk\DtoMapper\Metadata\RelationMetadata;
 use Zjk\DtoMapper\Metadata\Property;
 use Zjk\DtoMapper\Metadata\RepositoryMetadata;
 use Zjk\DtoMapper\Metadata\TransformerMetadata;
@@ -17,7 +17,7 @@ final class PropertyBuilder
     private bool $identifier = false;
 
     private ?TransformerMetadata $transformerMetadata = null;
-    private ?LocalActionMetadata $localActionMetadata = null;
+    private ?RelationMetadata $localActionMetadata = null;
     private ?RepositoryMetadata $repositoryMetadata = null;
 
     private function __construct()
@@ -59,7 +59,7 @@ final class PropertyBuilder
         return $this;
     }
 
-    public function setLocalActionMetadata(?LocalActionMetadata $localActionMetadata): PropertyBuilder
+    public function setLocalActionMetadata(?RelationMetadata $localActionMetadata): PropertyBuilder
     {
         $this->localActionMetadata = $localActionMetadata;
 

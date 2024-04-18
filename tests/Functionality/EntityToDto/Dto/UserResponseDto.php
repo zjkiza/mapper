@@ -12,7 +12,7 @@ use Zjk\DtoMapper\Tests\Resources\App\Entities\User;
 final class UserResponseDto
 {
     #[Getter(methodName: 'getIdentifier')]
-    public ?string $id;
+    public ?string $id = null;
 
-    public ?string $name;
+    public ?string $name = null;
 }

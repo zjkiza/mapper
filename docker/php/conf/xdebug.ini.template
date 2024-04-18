@@ -1,0 +1,13 @@
+zend_extension=${PHP_EXTENSION_DIR}/xdebug.so
+
+[xdebug]
+
+xdebug.mode=${PHP_XDEBUG_MODE}
+xdebug.start_with_request=yes
+xdebug.discover_client_host=1
+xdebug.idekey="${PHP_XDEBUG_IDEKEY}"
+xdebug.max_nesting_level=700
+xdebug.client_port=${PHP_XDEBUG_REMOTE_PORT}
+xdebug.client_host="${PHP_XDEBUG_REMOTE_ADDRESS}"
+#xdebug.remote_log="/var/log/xdebug.log"
+xdebug.log_level = 0

@@ -9,7 +9,7 @@ use Zjk\DtoMapper\Metadata\EntityMetadata;
 
 final class EntityMetadataBuilder
 {
-    protected string $entity;
+    private string $entity;
 
     private bool $newEntity = false;
 

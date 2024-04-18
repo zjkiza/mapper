@@ -1,0 +1,9 @@
+memory_limit=-1
+date.timezone=${SYSTEM_TIMEZONE}
+error_log='/var/log/php.error.log'
+display_startup_errors=1
+upload_max_filesize=${UPLOAD_MAX_FILESIZE}
+post_max_size=${POST_MAX_SIZE}
+max_execution_time=600
+session.auto_start=Off
+short_open_tag=Off

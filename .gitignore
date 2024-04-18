@@ -5,7 +5,6 @@
 /var
 /bin
 /build
-/docker
 /vendor
 .env
 /tests/Resources/var/*

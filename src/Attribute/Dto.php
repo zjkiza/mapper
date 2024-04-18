@@ -8,14 +8,22 @@ use Zjk\DtoMapper\Contract\PropertyAttributeInterface;
 use Zjk\DtoMapper\Contract\RelationAttributeInterface;
 
 #[\Attribute(\Attribute::TARGET_PROPERTY)]
-final class Dto implements PropertyAttributeInterface, RelationAttributeInterface
+final readonly class Dto implements PropertyAttributeInterface, RelationAttributeInterface
 {
     /**
      * @phpstan-param  class-string $className
      */
     public function __construct(
         /** @phpstan-var  class-string  */
-        public string $className
+        private string $className
     ) {
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getClassNameDto(): string
+    {
+       return $this->className;
     }
 }

@@ -31,7 +31,7 @@ final class ReflectionMetadata
      *
      * @throws \ReflectionException
      */
-    public function getDtosMetadata(object $dto): array
+    public function getDtosMetadata(object|string $dto): array
     {
         $dtoReflectionClass = new \ReflectionClass($dto);
 
@@ -101,7 +101,7 @@ final class ReflectionMetadata
                 $attributeInstance = $attribute->newInstance();
                 \assert($attributeInstance instanceof RelationAttributeInterface);
 
-                $object = new \ReflectionClass($attributeInstance->className);
+                $object = new \ReflectionClass($attributeInstance->getClassNameDto());
                 $this->createDtosMapped($object);
             }
         }
