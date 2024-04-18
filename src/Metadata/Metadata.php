@@ -6,15 +6,13 @@ namespace Zjk\DtoMapper\Metadata;
 
 final class Metadata
 {
-    protected ?string $entity = null;
-
     /**
      * @param array<string, Property> $properties
      */
     public function __construct(
         protected EntityMetadata $entityMetadata,
-        protected string $className,
-        protected array $properties
+        protected string         $classNameDto,
+        protected array          $properties
     ) {
     }
 
@@ -23,9 +21,9 @@ final class Metadata
         return $this->entityMetadata;
     }
 
-    public function getClassName(): string
+    public function getClassNameDto(): string
     {
-        return $this->className;
+        return $this->classNameDto;
     }
 
     /**

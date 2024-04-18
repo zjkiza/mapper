@@ -9,8 +9,7 @@ use Zjk\DtoMapper\Builder\PropertyBuilder;
 use Zjk\DtoMapper\Contract\AttributeInterface;
 use Zjk\DtoMapper\Contract\PropertyStrategyInterface;
 use Zjk\DtoMapper\Metadata\EntityMetadata;
-use Zjk\DtoMapper\Metadata\LocalActionMetadata;
-use Zjk\DtoMapper\Settings\Settings;
+use Zjk\DtoMapper\Metadata\RelationMetadata;
 
 final class CollectionStrategy implements PropertyStrategyInterface
 {
@@ -19,7 +18,7 @@ final class CollectionStrategy implements PropertyStrategyInterface
         \assert($attributeInstance instanceof Collection);
 
         $builder->setLocalActionMetadata(
-            LocalActionMetadata::create(Settings::MAPPER_LOCAL_FUNCTION[$attributeInstance::class], $attributeInstance->className)
+            RelationMetadata::create(Collection::class, $attributeInstance)
         );
     }
 
