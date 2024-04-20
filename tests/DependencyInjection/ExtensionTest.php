@@ -14,6 +14,7 @@ use Zjk\DtoMapper\Accessor\Method\PrivateMethodAccess;
 use Zjk\DtoMapper\Accessor\Property\DoctrineProxyPropertyAccessor;
 use Zjk\DtoMapper\Accessor\Property\PrivatePropertyAccess;
 use Zjk\DtoMapper\Contract\MapperInterface;
+use Zjk\DtoMapper\Contract\MetadataReaderInterface;
 use Zjk\DtoMapper\Contract\MethodAccessorInterface;
 use Zjk\DtoMapper\Contract\PropertyAccessInterface;
 use Zjk\DtoMapper\Contract\TransformerInterface;
@@ -67,7 +68,7 @@ final class ExtensionTest extends AbstractExtensionTestCase
 
         $this->assertContainerBuilderHasServiceDefinitionWithArgument(Mapper::class, 0, new Reference(EntityManagerInterface::class));
         $this->assertContainerBuilderHasServiceDefinitionWithArgument(Mapper::class, 1, new Reference(RepositoryInterface::class));
-        $this->assertContainerBuilderHasServiceDefinitionWithArgument(Mapper::class, 2, new Reference(ReflectionMetadata::class));
+        $this->assertContainerBuilderHasServiceDefinitionWithArgument(Mapper::class, 2, new Reference(MetadataReaderInterface::class));
         $this->assertContainerBuilderHasServiceDefinitionWithArgument(Mapper::class, 3, new Reference(DefaultAccessorInterface::class));
         $this->assertContainerBuilderHasServiceDefinitionWithArgument(Mapper::class, 4, new Reference(TransformerInterface::class));
         $this->assertContainerBuilderHasAlias(MapperInterface::class, Mapper::class);
