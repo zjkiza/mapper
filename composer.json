@@ -1,7 +1,7 @@
 {
   "name": "zjkiza/dto-mapper",
   "type": "symfony-bundle",
-  "description": "Mapping entity to dto and dto to entity.",
+  "description": "Mapping Symfony entity to dto and dto to Symfony entity.",
   "license": "MIT",
   "authors": [
     {

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<container
+        xmlns="http://symfony.com/schema/dic/services"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd"
+>
+
+    <services>
+        <service
+                id="Zjk\DtoMapper\Reader\CachedMetadataReader"
+                class="Zjk\DtoMapper\Reader\CachedMetadataReader"
+        >
+            <argument
+                    type="service"
+                    id="Zjk\DtoMapper\Metadata\ReflectionMetadata"
+            />
+
+            <argument
+                    type="service"
+                    id="zjk_dto_mapper.cache_pool"
+            />
+        </service>
+
+        <service
+                id="Zjk\DtoMapper\Contract\MetadataReaderInterface"
+                alias="Zjk\DtoMapper\Reader\CachedMetadataReader"
+        />
+    </services>
+
+</container>

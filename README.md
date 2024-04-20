@@ -1,6 +1,6 @@
 # DTO Mapper
 
-Mapping entity to dto, dto to entity, entity collection to dto and dto collection to entity.  
+Mapping Symfony entity to dto, dto to Symfony entity, Symfony entity collection to dto and dto collection to Symfony entity collection.  
 Bundle is based on using setters and getters from entity. 
 In the next versions, it is also planned to support that all data can be sent via the entity constructor.
 
@@ -21,9 +21,26 @@ return [
 ];
 ```
 
-2. Symfony entities must implement interface `Zjk\DtoMapper\Contract\IdentifierInterface`.
+2. The default configuration does not use redis. In order to activate redis on the dto mapper, it is necessary to set the configuration on the package.
+   In the file zjk_dto_mapper.yaml 
+  ```yaml
+    zjk_dto_mapper:
+        cache_pool: 'cache.app.zjk_dto_mapper'
+  ```
 
-3. With entities, the id must be created via the constructor. 
+  In the section for symfony cache:
+  ```yaml
+  framework:
+      cache:
+          app: 'cache.adapter.redis'
+          default_redis_provider: 'app.default_redis_connection'
+      pools:
+          cache.app.zjk_dto_mapper: ~
+  ```
+
+3. Symfony entities must implement interface `Zjk\DtoMapper\Contract\IdentifierInterface`.
+
+4. With entities, the id must be created via the constructor. 
 
   Example:
 
@@ -33,21 +50,25 @@ return [
   {
       ...
         
-     #[ORM\Id]
-     #[ORM\GeneratedValue(strategy: 'NONE')]
-     #[ORM\Column(type: 'uuid', unique: true)]
-     private UuidInterface $id;
+      #[ORM\Id]
+      #[ORM\GeneratedValue(strategy: 'NONE')]
+      #[ORM\Column(type: 'uuid', unique: true)]
+      private UuidInterface $id;
       
-     public function __construct(?UuidInterface $id = null)
-     {
+      public function __construct(?UuidInterface $id = null)
+      {
         $this->id = $id ?? Uuid::uuid4();
-     }
+      }
      
+      public function getIdentifier(): int|string
+      {
+        return $this->id->toString();
+      }
      ...
   }
   ```
 
-4. To work with the mapper, it is necessary to inject the `Zjk\DtoMapper\Contract\MapperInterface` service in the constructor. The mapper has four methods depending on what data mapping you are doing.
+5. To work with the mapper, it is necessary to inject the `Zjk\DtoMapper\Contract\MapperInterface` service in the constructor. The mapper has four methods depending on what data mapping you are doing.
 - `fromCollectionEntityToDto(iterable $collections, object|string $target): array`
 - `fromCollectionDtoToEntity(iterable $collections, object|string $target): array`
 - `fromObjectEntityToDto(object $entity, object|string $dto): object`
