@@ -9,16 +9,34 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension as SymfonyExtension;
 use Zjk\DtoMapper\Contract\DataTransformerInterface;
+use Zjk\DtoMapper\DependencyInjection\Configuration\Configuration;
 
+/**
+ * @psalm-type RowConfiguration = array{
+ *     cache_pool?: string
+ * }
+ */
 final class Extension extends SymfonyExtension
 {
     public function load(array $configs, ContainerBuilder $container): void
     {
+        /** @var RowConfiguration $config */
+        $config = $this->processConfiguration(new Configuration(), $configs);
         $loader        = new XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.xml');
 
         $container
             ->registerForAutoconfiguration(DataTransformerInterface::class)
-            ->addTag('zjk.mapper.transformer');
+            ->addTag('zjk_dto_mapper.transformer');
+
+        if (isset($config['cache_pool'])) {
+            $container->setAlias('zjk_dto_mapper.cache_pool', $config['cache_pool']);
+            $loader->load('cache_services.xml');
+        }
+    }
+
+    public function getAlias(): string
+    {
+        return 'zjk_dto_mapper';
     }
 }
