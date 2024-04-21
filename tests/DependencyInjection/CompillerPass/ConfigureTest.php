@@ -18,8 +18,8 @@ final class ConfigureTest extends AbstractCompilerPassTestCase
     {
         $this->container->register(Transformer::class);
 
-        $this->container->register(UpperTransformer::class)->addTag('zjk.mapper.transformer');
-        $this->container->register(UuidTransformer::class)->addTag('zjk.mapper.transformer');
+        $this->container->register(UpperTransformer::class)->addTag('zjk_dto_mapper.transformer');
+        $this->container->register(UuidTransformer::class)->addTag('zjk_dto_mapper.transformer');
 
         $this->compile();
 

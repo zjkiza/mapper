@@ -43,14 +43,19 @@ use function iterator_to_array;
 use function reset;
 use function sprintf;
 
-final readonly class Mapper implements MapperInterface
+final class Mapper implements MapperInterface
 {
+    /**
+     * @var array<class-string, Metadata>
+     */
+    private static array $cacheDtosMetadata = [];
+
     public function __construct(
-        private EntityManagerInterface   $entityManager,
-        private RepositoryInterface      $repository,
-        private MetadataReaderInterface  $metadataReader,
-        private DefaultAccessorInterface $defaultAccessor,
-        private TransformerInterface     $transformer
+        private readonly EntityManagerInterface   $entityManager,
+        private readonly RepositoryInterface      $repository,
+        private readonly MetadataReaderInterface  $metadataReader,
+        private readonly DefaultAccessorInterface $defaultAccessor,
+        private readonly TransformerInterface $transformer
     )
     {
     }
@@ -112,7 +117,7 @@ final readonly class Mapper implements MapperInterface
             $dto = $reflectionDto->newInstance();
         }
 
-        $metadata = $this->metadataReader->getMetadata($dto);
+        $metadata = $this->getBoostedMetadata($dto);
 
         foreach ($metadata->getProperties() as $property) {
             if (true === $property->hasTransformerMetadata()) {
@@ -149,7 +154,7 @@ final readonly class Mapper implements MapperInterface
      */
     public function fromObjectDtoToEntity(object $dto, object|string $entity): object
     {
-        $metadata = $this->metadataReader->getMetadata($dto);
+        $metadata = $this->getBoostedMetadata($dto);
 
         $dtoIdentifier = $this->getDtoIdentifier($dto, $metadata);
 
@@ -307,7 +312,7 @@ final readonly class Mapper implements MapperInterface
 
         foreach ($inputCollections as $dto) {
             assert(is_object($dto));
-            $metadata = $this->metadataReader->getMetadata($dto);
+            $metadata = $this->getBoostedMetadata($dto);
             $dtoIdentifier = $this->getDtoIdentifier($dto, $metadata);
 
             // Create new Entity
@@ -391,7 +396,7 @@ final readonly class Mapper implements MapperInterface
             return [];
         }
 
-        $metadata = $this->metadataReader->getMetadata($first);
+        $metadata = $this->getBoostedMetadata($first);
 
         /** @var array<int|string> $ids */
         $ids = array_filter(
@@ -515,11 +520,28 @@ final readonly class Mapper implements MapperInterface
 
         /** @var class-string $classNameDto */
         $classNameDto = $property->getLocalActionMetadata()->getClassNameDto();
-        $metadata = $this->metadataReader->getMetadata($classNameDto);
+        $metadata = $this->getBoostedMetadata($classNameDto);
 
         /** @var  class-string $entityFromDto */
         $entityFromDto = $metadata->getEntityMetadata()->getClassName();
 
         return $entityFromDto;
+    }
+
+    public function getBoostedMetadata(object|string $dto): Metadata
+    {
+        $dtoClassString = is_object($dto) ? $dto::class : $dto;
+
+        // if not set => create dtosMetadata
+        if ([] === self::$cacheDtosMetadata) {
+            self::$cacheDtosMetadata[$dtoClassString] = $this->metadataReader->getMetadata($dto);
+        }
+
+        // Not exist => add dtosMetadata
+        if (!isset(self::$cacheDtosMetadata[$dtoClassString])) {
+            self::$cacheDtosMetadata[$dtoClassString] = $this->metadataReader->getMetadata($dto);
+        }
+
+        return self::$cacheDtosMetadata[$dtoClassString];
     }
 }

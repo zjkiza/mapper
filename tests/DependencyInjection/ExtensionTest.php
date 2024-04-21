@@ -19,6 +19,7 @@ use Zjk\DtoMapper\Contract\MethodAccessorInterface;
 use Zjk\DtoMapper\Contract\PropertyAccessInterface;
 use Zjk\DtoMapper\Contract\TransformerInterface;
 use Zjk\DtoMapper\Mapper;
+use Zjk\DtoMapper\Reader\CachedMetadataReader;
 use Zjk\DtoMapper\Transformer\Transformer;
 use Zjk\DtoMapper\Builder\Create\EntityMetadataBuilderCreate;
 use Zjk\DtoMapper\Builder\Create\PropertyBuilderCreate;
@@ -46,8 +47,8 @@ final class ExtensionTest extends AbstractExtensionTestCase
         $this->assertContainerBuilderHasServiceDefinitionWithArgument(ReflectionMetadata::class, 0, new Reference(PropertyBuilderCreate::class));
         $this->assertContainerBuilderHasServiceDefinitionWithArgument(ReflectionMetadata::class, 1, new Reference(EntityMetadataBuilderCreate::class));
 
-        $this->assertContainerBuilderHasServiceDefinitionWithTag(UuidTransformer::class, 'zjk.mapper.transformer');
-        $this->assertContainerBuilderHasServiceDefinitionWithTag(UpperTransformer::class, 'zjk.mapper.transformer');
+        $this->assertContainerBuilderHasServiceDefinitionWithTag(UuidTransformer::class, 'zjk_dto_mapper.transformer');
+        $this->assertContainerBuilderHasServiceDefinitionWithTag(UpperTransformer::class, 'zjk_dto_mapper.transformer');
 
         $this->assertContainerBuilderHasServiceDefinitionWithArgument(Transformer::class, 0, new Reference(DefaultAccessorInterface::class));
         $this->assertContainerBuilderHasAlias(TransformerInterface::class, Transformer::class);
@@ -72,6 +73,18 @@ final class ExtensionTest extends AbstractExtensionTestCase
         $this->assertContainerBuilderHasServiceDefinitionWithArgument(Mapper::class, 3, new Reference(DefaultAccessorInterface::class));
         $this->assertContainerBuilderHasServiceDefinitionWithArgument(Mapper::class, 4, new Reference(TransformerInterface::class));
         $this->assertContainerBuilderHasAlias(MapperInterface::class, Mapper::class);
+    }
+
+    public function testWithRedisServiceConfig(): void
+    {
+        $this->load([
+            'cache_pool' => 'cache.adapter.redis'
+        ]);
+
+        $this->assertContainerBuilderHasAlias(MetadataReaderInterface::class, CachedMetadataReader::class);
+        $this->assertContainerBuilderHasAlias('zjk_dto_mapper.cache_pool', 'cache.adapter.redis');
+        $this->assertContainerBuilderHasServiceDefinitionWithArgument(CachedMetadataReader::class, 0, new Reference(ReflectionMetadata::class));
+        $this->assertContainerBuilderHasServiceDefinitionWithArgument(CachedMetadataReader::class, 1, new Reference('zjk_dto_mapper.cache_pool'));
     }
 
     protected function getContainerExtensions(): array
