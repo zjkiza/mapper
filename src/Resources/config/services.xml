@@ -144,6 +144,23 @@
                 alias="Zjk\DtoMapper\Accessor\DefaultAccessor"
         />
 
+        <!-- Configure Metadata Rider -->
+        <service
+                id="Zjk\DtoMapper\Reader\MetadataReader"
+                class="Zjk\DtoMapper\Reader\MetadataReader"
+        >
+            <argument
+                    type="service"
+                    id="Zjk\DtoMapper\Metadata\ReflectionMetadata"
+            />
+
+        </service>
+
+        <service
+                id="Zjk\DtoMapper\Contract\MetadataReaderInterface"
+                alias="Zjk\DtoMapper\Reader\MetadataReader"
+        />
+
         <!-- Configure Mapper -->
         <service
                 id="Zjk\DtoMapper\Mapper"
@@ -160,7 +177,7 @@
             />
             <argument
                     type="service"
-                    id="Zjk\DtoMapper\Metadata\ReflectionMetadata"
+                    id="Zjk\DtoMapper\Contract\MetadataReaderInterface"
             />
             <argument
                     type="service"
