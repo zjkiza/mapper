@@ -7,6 +7,7 @@ namespace Zjk\DtoMapper\Reader;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Cache\InvalidArgumentException;
 use ReflectionException;
+use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Zjk\DtoMapper\Contract\MetadataReaderInterface;
 use Zjk\DtoMapper\Metadata\Metadata;
 use Zjk\DtoMapper\Metadata\ReflectionMetadata;
@@ -15,27 +16,41 @@ use function sprintf;
 
 final readonly class CachedMetadataReader implements MetadataReaderInterface
 {
+    private ReflectionMetadata $reflectionMetadata;
+
+    private CacheItemPoolInterface $cache;
+
     public function __construct(
-        private ReflectionMetadata     $reflectionMetadata,
-        private CacheItemPoolInterface $cache,
+        ReflectionMetadata      $reflectionMetadata,
+        ?CacheItemPoolInterface $cache = null,
     )
     {
+        $this->reflectionMetadata = $reflectionMetadata;
+        $this->cache = $cache ?? new ArrayAdapter();
     }
 
     /**
+     * @template T of object
+     *
+     * @param class-string<T>|T $dto
+     *
      * @throws ReflectionException
      * @throws InvalidArgumentException
      */
     public function getMetadata(object|string $dto): Metadata
     {
-        $dtoClassString = is_object($dto) ? get_class($dto) : $dto;
+        /** @var class-string $dtoClassString */
+        $dtoClassString = is_object($dto) ? $dto::class : $dto;
 
         $item = $this->cache->getItem(
             $this->getKey($dtoClassString)
         );
 
-        if (true === $item->isHit()) {
-            return $item->get();
+        if ($item->isHit()) {
+            /** @var Metadata $metadata */
+            $metadata = $item->get();
+
+            return $metadata;
         }
 
         $metadata = null;
@@ -47,7 +62,7 @@ final readonly class CachedMetadataReader implements MetadataReaderInterface
                 $this->getKey($metadataDto->getClassNameDto())
             );
 
-            if (true === $itemLocal->isHit()) {
+            if ($itemLocal->isHit()) {
                 continue;
             }
 
@@ -59,10 +74,15 @@ final readonly class CachedMetadataReader implements MetadataReaderInterface
             }
         }
 
+        assert($metadata instanceof Metadata);
+
         return $metadata;
     }
 
-    public function getKey(object|string $dtoClassString): string
+    /**
+     * @param class-string $dtoClassString
+     */
+    private function getKey(string $dtoClassString): string
     {
         return sprintf('MetadataDto_%s', md5($dtoClassString));
     }

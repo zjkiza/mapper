@@ -9,7 +9,6 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension as SymfonyExtension;
 use Zjk\DtoMapper\Contract\DataTransformerInterface;
-use Zjk\DtoMapper\DependencyInjection\Configuration\Configuration;
 
 /**
  * @psalm-type RowConfiguration = array{
@@ -18,6 +17,9 @@ use Zjk\DtoMapper\DependencyInjection\Configuration\Configuration;
  */
 final class Extension extends SymfonyExtension
 {
+    /**
+     * {@inheritdoc}
+     */
     public function load(array $configs, ContainerBuilder $container): void
     {
         /** @var RowConfiguration $config */
@@ -35,6 +37,9 @@ final class Extension extends SymfonyExtension
         }
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getAlias(): string
     {
         return 'zjk_dto_mapper';

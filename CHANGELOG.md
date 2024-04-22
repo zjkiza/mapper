@@ -1,0 +1,38 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+## [0.7.0]
+### Fixed  
+- Bug : the command `bin/console debug:config zjk_dto_mapper` gave an error. 
+- Static analyses.
+- Documentation
+### Added
+- Composer dependency.
+- Reduction of complexity.
+
+## [0.6.2]
+### Added
+- Redis for acceleration and updated documentation.
+
+## [0.6.1]
+### Fixed
+- Description.
+
+## [0.6.0]
+### Fixed
+- Bug: embedded objects when dto to entity conversion.
+- Bug: make file.
+- Documentation.
+### Added
+- Unit test
+
+## [0.5.1]
+### Fixed
+- Documentation.
+- Catches an exception when the data type is not valid on the ID.
+### Added
+- Unit test
+
+## [0.5.0]
+Initial version

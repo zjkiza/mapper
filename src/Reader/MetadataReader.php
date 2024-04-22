@@ -23,6 +23,10 @@ final class MetadataReader implements MetadataReaderInterface
     }
 
     /**
+     * @template T of object
+     *
+     * @param class-string<T>|T $dto
+     *
      * @throws ReflectionException
      */
     public function getMetadata(object|string $dto): Metadata

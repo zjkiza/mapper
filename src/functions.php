@@ -12,9 +12,7 @@ function checkIsAllValuesInArraySameType(
     array $inputCollections,
     string $type
 ): void {
-    $isAllValueInArraySameType = static function (array $inputCollection) use ($type): bool {
-        return !(bool) \array_filter($inputCollection, static fn ($value): bool => \gettype($value) !== $type);
-    };
+    $isAllValueInArraySameType = static fn(array $inputCollection): bool => !(bool) \array_filter($inputCollection, static fn ($value): bool => \gettype($value) !== $type);
 
     if (false === $isAllValueInArraySameType($inputCollections)) {
         throw new \RuntimeException('All value in array is not same type.');

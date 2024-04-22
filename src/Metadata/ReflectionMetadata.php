@@ -27,6 +27,10 @@ final class ReflectionMetadata
     }
 
     /**
+     * @template T of object
+     *
+     * @param class-string<T>|T $dto
+     *
      * @return array<class-string, Metadata>
      *
      * @throws \ReflectionException

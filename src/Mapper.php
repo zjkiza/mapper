@@ -22,7 +22,6 @@ use Zjk\DtoMapper\Metadata\DtoIdentifier;
 use Zjk\DtoMapper\Metadata\RelationMetadata;
 use Zjk\DtoMapper\Metadata\Metadata;
 use Zjk\DtoMapper\Metadata\Property;
-use Zjk\DtoMapper\Metadata\ReflectionMetadata;
 use Zjk\DtoMapper\Exception\NotExistAttribute;
 use Zjk\DtoMapper\Metadata\RepositoryMetadata;
 use function array_combine;
@@ -254,20 +253,21 @@ final class Mapper implements MapperInterface
         $editKey = array_intersect($newKeys, $previousKeyKeys);
 
         // Add new relation
-        foreach ($addKey as $key) {
+        array_walk($addKey, static function ($key) use ($entity, $repositoryMetadata, $newCollection): void{
             $entity->{$repositoryMetadata->getAddMethod()}($newCollection[$key]);
-        }
+        });
 
         // Remove
-        foreach ($removeKey as $key) {
+        array_walk($removeKey, static function ($key) use ($entity, $repositoryMetadata, $previousCollection): void{
             $entity->{$repositoryMetadata->getRemoveMethod()}($previousCollection[$key]);
-        }
+        });
+
 
         // Edit : Replace - remove old and add new
-        foreach ($editKey as $key) {
+        array_walk($editKey, static function ($key) use ($entity, $repositoryMetadata, $previousCollection, $newCollection): void{
             $entity->{$repositoryMetadata->getRemoveMethod()}($previousCollection[$key]);
             $entity->{$repositoryMetadata->getAddMethod()}($newCollection[$key]);
-        }
+        });
     }
 
     /**
@@ -528,8 +528,14 @@ final class Mapper implements MapperInterface
         return $entityFromDto;
     }
 
+    /**
+     * @template T of object
+     *
+     * @param class-string<T>|T $dto
+     */
     public function getBoostedMetadata(object|string $dto): Metadata
     {
+        /** @var class-string $dtoClassString */
         $dtoClassString = is_object($dto) ? $dto::class : $dto;
 
         // if not set => create dtosMetadata
