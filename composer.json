@@ -54,6 +54,7 @@
   "scripts": {
     "phpunit": "XDEBUG_MODE=coverage vendor/bin/phpunit --testdox --coverage-html ./build/phpunit",
     "phpstan": "vendor/bin/phpstan analyse -v",
-    "php-cs-fixer": "vendor/bin/php-cs-fixer fix --diff --verbose --show-progress=dots --allow-risky=yes"
+    "php-cs-fixer": "vendor/bin/php-cs-fixer fix --diff --verbose --show-progress=dots --allow-risky=yes",
+    "rector": "vendor/bin/rector"
   }
 }

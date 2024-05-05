@@ -20,7 +20,7 @@ final class TransformerCompilerPass implements CompilerPassInterface
         $definition = $container->getDefinition(Transformer::class);
 
         $transformers = [];
-        foreach ($container->findTaggedServiceIds('zjk_dto_mapper.transformer') as $id => $tags) {
+        foreach (\array_keys($container->findTaggedServiceIds('zjk_dto_mapper.transformer')) as $id) {
             $transformers[$id] = new Reference($id);
         }
 

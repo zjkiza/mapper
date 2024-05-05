@@ -78,7 +78,7 @@ final class ExtensionTest extends AbstractExtensionTestCase
     public function testWithRedisServiceConfig(): void
     {
         $this->load([
-            'cache_pool' => 'cache.adapter.redis'
+            'cache_pool' => 'cache.adapter.redis',
         ]);
 
         $this->assertContainerBuilderHasAlias(MetadataReaderInterface::class, CachedMetadataReader::class);

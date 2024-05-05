@@ -6,8 +6,6 @@ namespace Zjk\DtoMapper;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
-use ReflectionClass;
-use ReflectionException;
 use Zjk\DtoMapper\Attribute\Dto;
 use Zjk\DtoMapper\Contract\DefaultAccessorInterface;
 use Zjk\DtoMapper\Contract\IdentifierInterface;
@@ -24,23 +22,6 @@ use Zjk\DtoMapper\Metadata\Metadata;
 use Zjk\DtoMapper\Metadata\Property;
 use Zjk\DtoMapper\Exception\NotExistAttribute;
 use Zjk\DtoMapper\Metadata\RepositoryMetadata;
-use function array_combine;
-use function array_diff;
-use function array_diff_assoc;
-use function array_filter;
-use function array_intersect;
-use function array_keys;
-use function array_map;
-use function array_unique;
-use function assert;
-use function count;
-use function implode;
-use function is_array;
-use function is_object;
-use function iterator_count;
-use function iterator_to_array;
-use function reset;
-use function sprintf;
 
 final class Mapper implements MapperInterface
 {
@@ -50,13 +31,12 @@ final class Mapper implements MapperInterface
     private static array $cacheDtosMetadata = [];
 
     public function __construct(
-        private readonly EntityManagerInterface   $entityManager,
-        private readonly RepositoryInterface      $repository,
-        private readonly MetadataReaderInterface  $metadataReader,
+        private readonly EntityManagerInterface $entityManager,
+        private readonly RepositoryInterface $repository,
+        private readonly MetadataReaderInterface $metadataReader,
         private readonly DefaultAccessorInterface $defaultAccessor,
         private readonly TransformerInterface $transformer
-    )
-    {
+    ) {
     }
 
     /**
@@ -107,12 +87,12 @@ final class Mapper implements MapperInterface
      *
      * @phpstan-return T
      *
-     * @throws ReflectionException
+     * @throws \ReflectionException
      */
     public function fromObjectEntityToDto(object $entity, object|string $dto): object
     {
-        if (!is_object($dto)) {
-            $reflectionDto = new ReflectionClass($dto);
+        if (!\is_object($dto)) {
+            $reflectionDto = new \ReflectionClass($dto);
             $dto = $reflectionDto->newInstance();
         }
 
@@ -149,7 +129,7 @@ final class Mapper implements MapperInterface
      *
      * @retrun T
      *
-     * @throws ReflectionException|NotExistAttribute
+     * @throws \ReflectionException|NotExistAttribute
      */
     public function fromObjectDtoToEntity(object $dto, object|string $entity): object
     {
@@ -157,7 +137,7 @@ final class Mapper implements MapperInterface
 
         $dtoIdentifier = $this->getDtoIdentifier($dto, $metadata);
 
-        if (!is_object($entity)) {
+        if (!\is_object($entity)) {
             $entity = ($metadata->getEntityMetadata()->isNewEntity())
                 ? $this->newEntity($dtoIdentifier, $entity)
                 : $this->getEntity(
@@ -205,17 +185,22 @@ final class Mapper implements MapperInterface
 
     /**
      * @throws NotExistAttribute
-     * @throws ReflectionException
+     * @throws \ReflectionException
      */
     private function repository(object $entity, Property $property, object $dto): void
     {
+        // Must be defined if a collection is being processed
+        if (!$property->getLocalActionMetadata() instanceof RelationMetadata) {
+            throw new NotExistAttribute('Attribute Collection is must by define when used attribute Repository.');
+        }
+
         /** @var RepositoryMetadata $repositoryMetadata */
         $repositoryMetadata = $property->getRepositoryMetadata();
 
         /** @var array<array{}|object> $inputCollections */
         $inputCollections = $this->defaultAccessor->getValue($dto, $property);
 
-        if (false === (bool)$inputCollections) {
+        if (false === (bool) $inputCollections) {
             $this->defaultAccessor->setValue($entity, $property, new ArrayCollection());
 
             return;
@@ -225,11 +210,6 @@ final class Mapper implements MapperInterface
 
         // It's not just a relation, but CRUD processing goes through the collection
         if (false === $repositoryMetadata->isOnlyRelation()) {
-            // Must be defined if a collection is being processed
-            if (!$property->getLocalActionMetadata() instanceof RelationMetadata) {
-                throw new NotExistAttribute('Attribute Collection is must by define when used attribute Repository with property isOnlyRelation=false');
-            }
-
             /** @var object[] $inputCollections */
             $newCollection = $this->newCollectionFromObject($repositoryMetadata, $inputCollections);
         } else {
@@ -237,7 +217,7 @@ final class Mapper implements MapperInterface
             $newCollection = $this->newRelationCollection($repositoryMetadata, $inputCollections, $dto);
         }
 
-        if (false === (bool)$newCollection) {
+        if (false === (bool) $newCollection) {
             $this->defaultAccessor->setValue($entity, $property, new ArrayCollection());
 
             return;
@@ -245,26 +225,25 @@ final class Mapper implements MapperInterface
 
         $previousCollection = $this->getPreviousCollection($entity, $property);
 
-        $newKeys = array_keys($newCollection);
-        $previousKeyKeys = array_keys($previousCollection);
+        $newKeys = \array_keys($newCollection);
+        $previousKeyKeys = \array_keys($previousCollection);
 
-        $addKey = array_diff($newKeys, $previousKeyKeys);
-        $removeKey = array_diff($previousKeyKeys, $newKeys);
-        $editKey = array_intersect($newKeys, $previousKeyKeys);
+        $addKey = \array_diff($newKeys, $previousKeyKeys);
+        $removeKey = \array_diff($previousKeyKeys, $newKeys);
+        $editKey = \array_intersect($newKeys, $previousKeyKeys);
 
         // Add new relation
-        array_walk($addKey, static function ($key) use ($entity, $repositoryMetadata, $newCollection): void{
+        \array_walk($addKey, static function ($key) use ($entity, $repositoryMetadata, $newCollection): void {
             $entity->{$repositoryMetadata->getAddMethod()}($newCollection[$key]);
         });
 
         // Remove
-        array_walk($removeKey, static function ($key) use ($entity, $repositoryMetadata, $previousCollection): void{
+        \array_walk($removeKey, static function ($key) use ($entity, $repositoryMetadata, $previousCollection): void {
             $entity->{$repositoryMetadata->getRemoveMethod()}($previousCollection[$key]);
         });
 
-
         // Edit : Replace - remove old and add new
-        array_walk($editKey, static function ($key) use ($entity, $repositoryMetadata, $previousCollection, $newCollection): void{
+        \array_walk($editKey, static function ($key) use ($entity, $repositoryMetadata, $previousCollection, $newCollection): void {
             $entity->{$repositoryMetadata->getRemoveMethod()}($previousCollection[$key]);
             $entity->{$repositoryMetadata->getAddMethod()}($newCollection[$key]);
         });
@@ -278,7 +257,7 @@ final class Mapper implements MapperInterface
      * @return array<string|int, T>
      *
      * @throws NotExistAttribute
-     * @throws ReflectionException
+     * @throws \ReflectionException
      */
     private function newCollectionFromObject(RepositoryMetadata $repositoryMetadata, iterable $inputCollections): array
     {
@@ -311,7 +290,7 @@ final class Mapper implements MapperInterface
         $dtoIdentifiers = [];
 
         foreach ($inputCollections as $dto) {
-            assert(is_object($dto));
+            \assert(\is_object($dto));
             $metadata = $this->getBoostedMetadata($dto);
             $dtoIdentifier = $this->getDtoIdentifier($dto, $metadata);
 
@@ -321,7 +300,7 @@ final class Mapper implements MapperInterface
                 $entity = new $entityClass();
 
                 if (!($entity instanceof IdentifierInterface)) {
-                    throw new InvalidClassImplementationException(sprintf('Class "%s" is not implement "%s" interface. Did you forget to implement the interface?', $entityClass, IdentifierInterface::class));
+                    throw new InvalidClassImplementationException(\sprintf('Class "%s" is not implement "%s" interface. Did you forget to implement the interface?', $entityClass, IdentifierInterface::class));
                 }
 
                 $newCollection[$entity->getIdentifier()] = $this->fromObjectDtoToEntity($dto, $entity);
@@ -340,14 +319,14 @@ final class Mapper implements MapperInterface
          */
         $entityFromRepository = $this->repository->findAllByIdentifiers($inputIdsFromRepository, $entityClass);
 
-        if (iterator_count($entityFromRepository) !== count($inputIdsFromRepository)) {
-            $existIdRepository = array_map(
-                static fn(IdentifierInterface $identifier): int|string => $identifier->getIdentifier(),
-                iterator_to_array($entityFromRepository)
+        if (\iterator_count($entityFromRepository) !== \count($inputIdsFromRepository)) {
+            $existIdRepository = \array_map(
+                static fn (IdentifierInterface $identifier): int|string => $identifier->getIdentifier(),
+                \iterator_to_array($entityFromRepository)
             );
 
             // difference between input and found => new entities to be created with input ID
-            $addNewEntityWithDefinedId = array_diff($inputIdsFromRepository, $existIdRepository);
+            $addNewEntityWithDefinedId = \array_diff($inputIdsFromRepository, $existIdRepository);
 
             // Add Entity Through Dto
             foreach ($addNewEntityWithDefinedId as $id) {
@@ -359,7 +338,8 @@ final class Mapper implements MapperInterface
 
         // Updating Entity Through Dto
         foreach ($entityFromRepository as $entity) {
-            $newCollection[$entity->getIdentifier()] = $this->fromObjectDtoToEntity($dtoForEntity[$entity->getIdentifier()], $entity);
+            $entityId = $entity->getIdentifier();
+            $newCollection[$entityId] = $this->fromObjectDtoToEntity($dtoForEntity[$entityId], $entity);
         }
 
         /**
@@ -377,7 +357,7 @@ final class Mapper implements MapperInterface
      *
      * @return array<string|int, T>
      *
-     * @throws ReflectionException
+     * @throws \ReflectionException
      * @throws NotExistAttribute
      */
     private function newRelationCollection(RepositoryMetadata $repositoryMetadata, iterable $inputCollections, object $dto): array
@@ -387,10 +367,8 @@ final class Mapper implements MapperInterface
 
         $inputArray = iterable_to_array($inputCollections);
 
-        checkIsAllValuesInArraySameType($inputArray, 'object');
-
         /** @var object|false $first */
-        $first = reset($inputArray);
+        $first = \reset($inputArray);
 
         if (false === $first) {
             return [];
@@ -399,21 +377,21 @@ final class Mapper implements MapperInterface
         $metadata = $this->getBoostedMetadata($first);
 
         /** @var array<int|string> $ids */
-        $ids = array_filter(
-            array_map(fn(object $dto): mixed => $this->getDtoIdentifier($dto, $metadata)->getValue(), $inputArray),
-            static fn(mixed $value): bool => null !== $value
+        $ids = \array_filter(
+            \array_map(fn (object $dto): mixed => $this->getDtoIdentifier($dto, $metadata)->getValue(), $inputArray),
+            static fn (mixed $value): bool => null !== $value
         );
 
         $collection = $this->repository->findAllByIdentifiers($ids, $class);
 
         /** @var T[] $arrayFromCollection */
-        $arrayFromCollection = iterator_to_array($collection);
+        $arrayFromCollection = \iterator_to_array($collection);
 
-        if (count($ids) !== count($arrayFromCollection)) {
-            throw new RuntimeException(sprintf('There are duplicate entities with ids "%s" in collection "%s". In DTO "%s", you must insert a validator to check for duplicates in the input collection.', implode(', ', array_diff_assoc($ids, array_unique($ids))), $metadata->getEntityMetadata()->getClassName(), $dto::class));
+        if (\count($ids) !== \count($arrayFromCollection)) {
+            throw new RuntimeException(\sprintf('There are duplicate entities with ids "%s" in collection "%s". In DTO "%s", you must insert a validator to check for duplicates in the input collection.', \implode(', ', \array_diff_assoc($ids, \array_unique($ids))), $metadata->getEntityMetadata()->getClassName(), $dto::class));
         }
 
-        return array_combine($ids, $arrayFromCollection);
+        return \array_combine($ids, $arrayFromCollection);
     }
 
     /**
@@ -426,7 +404,7 @@ final class Mapper implements MapperInterface
         $entityFromDto = $metadata->getEntityMetadata()->getClassName();
 
         if ($entity !== $entityFromDto) {
-            throw new NotExistAttribute(sprintf('Entity from class "%s" and defined entity in entity attribute "%s" in DTO object %s is not same!', $entity, $entityFromDto, $dto::class));
+            throw new NotExistAttribute(\sprintf('Entity from class "%s" and defined entity in entity attribute "%s" in DTO object %s is not same!', $entity, $entityFromDto, $dto::class));
         }
 
         if (!$dtoIdentifier instanceof DtoIdentifier) {
@@ -459,16 +437,16 @@ final class Mapper implements MapperInterface
         /** @var IdentifierInterface[] $previousArrayFromDatabase */
         $previousArrayFromDatabase = $arrayCollection->toArray();
 
-        if (!is_array($previousArrayFromDatabase) || false === (bool)$previousArrayFromDatabase) {
+        if (!\is_array($previousArrayFromDatabase) || false === (bool) $previousArrayFromDatabase) {
             return [];
         }
 
-        $previousCollectionIds = array_map(
-            static fn(IdentifierInterface $entity): int|string => $entity->getIdentifier(),
+        $previousCollectionIds = \array_map(
+            static fn (IdentifierInterface $entity): int|string => $entity->getIdentifier(),
             $previousArrayFromDatabase
         );
 
-        return array_combine($previousCollectionIds, $previousArrayFromDatabase);
+        return \array_combine($previousCollectionIds, $previousArrayFromDatabase);
     }
 
     /**
@@ -493,7 +471,7 @@ final class Mapper implements MapperInterface
             return DtoIdentifier::create($dto::class, $metadataDto->getEntityMetadata()->getClassName(), $property, $value);
         }
 
-        throw new NotExistAttribute(sprintf('IdentifierStrategy attribute is must be define (example: #[Identifier]) on property ID in object %s.', $dto::class));
+        throw new NotExistAttribute(\sprintf('IdentifierStrategy attribute is must be define (example: #[Identifier]) on property ID in object %s.', $dto::class));
     }
 
     private function newEntity(DtoIdentifier $dtoIdentifier, string $entityClassName): object
@@ -505,24 +483,24 @@ final class Mapper implements MapperInterface
         try {
             return new $entityClassName(...$idValue);
         } catch (\TypeError) {
-            throw new TypeError(sprintf('A new entity cannot be created. Id argument in dto "%s" must by same type with entity. Use the transformer on the ID property to convert it to a type like in entity "%s".', $dtoIdentifier->getDtoClass(), $dtoIdentifier->getEntityClass()));
+            throw new TypeError(\sprintf('A new entity cannot be created. Id argument in dto "%s" must by same type with entity. Use the transformer on the ID property to convert it to a type like in entity "%s".', $dtoIdentifier->getDtoClass(), $dtoIdentifier->getEntityClass()));
         }
     }
 
     /**
      * @phpstan-return class-string
      *
-     * @throws ReflectionException
+     * @throws \ReflectionException
      */
     private function getEntityFromRelationAttribute(Property $property): string
     {
-        assert($property->getLocalActionMetadata() instanceof RelationMetadata);
+        \assert($property->getLocalActionMetadata() instanceof RelationMetadata);
 
         /** @var class-string $classNameDto */
         $classNameDto = $property->getLocalActionMetadata()->getClassNameDto();
         $metadata = $this->getBoostedMetadata($classNameDto);
 
-        /** @var  class-string $entityFromDto */
+        /** @var class-string $entityFromDto */
         $entityFromDto = $metadata->getEntityMetadata()->getClassName();
 
         return $entityFromDto;
@@ -533,10 +511,10 @@ final class Mapper implements MapperInterface
      *
      * @param class-string<T>|T $dto
      */
-    public function getBoostedMetadata(object|string $dto): Metadata
+    private function getBoostedMetadata(object|string $dto): Metadata
     {
         /** @var class-string $dtoClassString */
-        $dtoClassString = is_object($dto) ? $dto::class : $dto;
+        $dtoClassString = \is_object($dto) ? $dto::class : $dto;
 
         // if not set => create dtosMetadata
         if ([] === self::$cacheDtosMetadata) {

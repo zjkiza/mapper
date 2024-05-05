@@ -7,13 +7,13 @@ namespace Zjk\DtoMapper\Metadata;
 final readonly class Property
 {
     public function __construct(
-        private string               $getter,
-        private string               $setter,
-        private string               $name,
-        private bool                 $identifier,
+        private string $getter,
+        private string $setter,
+        private string $name,
+        private bool $identifier,
         private ?TransformerMetadata $transformerMetadata = null,
-        private ?RelationMetadata    $localActionMetadata = null,
-        private ?RepositoryMetadata  $repositoryMetadata = null
+        private ?RelationMetadata $localActionMetadata = null,
+        private ?RepositoryMetadata $repositoryMetadata = null
     ) {
     }
 
@@ -68,13 +68,13 @@ final readonly class Property
     }
 
     public static function create(
-        string               $getter,
-        string               $setter,
-        string               $name,
-        bool                 $identifier,
+        string $getter,
+        string $setter,
+        string $name,
+        bool $identifier,
         ?TransformerMetadata $transformerMetadata = null,
-        ?RelationMetadata    $localActionMetadata = null,
-        ?RepositoryMetadata  $repositoryMetadata = null,
+        ?RelationMetadata $localActionMetadata = null,
+        ?RepositoryMetadata $repositoryMetadata = null,
     ): self {
         return new self($getter, $setter, $name, $identifier, $transformerMetadata, $localActionMetadata, $repositoryMetadata);
     }

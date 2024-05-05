@@ -12,17 +12,11 @@ use Zjk\DtoMapper\DependencyInjection\Extension;
 
 final class ZJKizaMapperBundle extends Bundle
 {
-    /**
-     * {@inheritdoc}
-     */
     public function build(ContainerBuilder $container): void
     {
         $container->addCompilerPass(new TransformerCompilerPass());
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getContainerExtension(): ExtensionInterface
     {
         return new Extension();

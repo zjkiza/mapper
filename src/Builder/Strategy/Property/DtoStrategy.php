@@ -10,13 +10,12 @@ use Zjk\DtoMapper\Contract\AttributeInterface;
 use Zjk\DtoMapper\Contract\PropertyStrategyInterface;
 use Zjk\DtoMapper\Metadata\EntityMetadata;
 use Zjk\DtoMapper\Metadata\RelationMetadata;
-use function assert;
 
 final class DtoStrategy implements PropertyStrategyInterface
 {
     public function build(PropertyBuilder $builder, AttributeInterface $attributeInstance, EntityMetadata $entityMetadata): void
     {
-        assert($attributeInstance instanceof Dto);
+        \assert($attributeInstance instanceof Dto);
 
         $builder->setLocalActionMetadata(
             RelationMetadata::create(Dto::class, $attributeInstance)

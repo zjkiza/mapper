@@ -19,9 +19,6 @@ final readonly class Collection implements PropertyAttributeInterface, RelationA
     ) {
     }
 
-    /**
-     * @inheritDoc
-     */
     public function getClassNameDto(): string
     {
         return $this->className;

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Zjk\DtoMapper\Reader;
 
-use ReflectionException;
 use Zjk\DtoMapper\Contract\MetadataReaderInterface;
 use Zjk\DtoMapper\Metadata\Metadata;
 use Zjk\DtoMapper\Metadata\ReflectionMetadata;
@@ -18,8 +17,7 @@ final class MetadataReader implements MetadataReaderInterface
 
     public function __construct(
         private readonly ReflectionMetadata $reflectionMetadata
-    )
-    {
+    ) {
     }
 
     /**
@@ -27,7 +25,7 @@ final class MetadataReader implements MetadataReaderInterface
      *
      * @param class-string<T>|T $dto
      *
-     * @throws ReflectionException
+     * @throws \ReflectionException
      */
     public function getMetadata(object|string $dto): Metadata
     {
@@ -36,7 +34,7 @@ final class MetadataReader implements MetadataReaderInterface
             self::$cacheDtosMetadata = $this->reflectionMetadata->getDtosMetadata($dto);
         }
 
-        $dtoClassString = is_object($dto) ? $dto::class : $dto;
+        $dtoClassString = \is_object($dto) ? $dto::class : $dto;
 
         // Not exist => add dtosMetadata
         if (!isset(self::$cacheDtosMetadata[$dtoClassString])) {

@@ -19,11 +19,8 @@ final readonly class Dto implements PropertyAttributeInterface, RelationAttribut
     ) {
     }
 
-    /**
-     * @inheritDoc
-     */
     public function getClassNameDto(): string
     {
-       return $this->className;
+        return $this->className;
     }
 }

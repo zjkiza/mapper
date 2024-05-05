@@ -16,7 +16,7 @@ final readonly class DoctrineProxyMethodAccessor implements MethodAccessorInterf
 
     public function callGetter(object $object, Property $property): mixed
     {
-        if (\interface_exists(Proxy::class) && \is_a($object, Proxy::class)  && !$object->__isInitialized()) {
+        if (\interface_exists(Proxy::class) && $object instanceof Proxy  && !$object->__isInitialized()) {
             $object->__load();
         }
 
@@ -25,7 +25,7 @@ final readonly class DoctrineProxyMethodAccessor implements MethodAccessorInterf
 
     public function callSetter(object $object, Property $property, mixed $value): void
     {
-        if (\interface_exists(Proxy::class) && \is_a($object, Proxy::class) && !$object->__isInitialized()) {
+        if (\interface_exists(Proxy::class) && $object instanceof Proxy && !$object->__isInitialized()) {
             $object->__load();
         }
 

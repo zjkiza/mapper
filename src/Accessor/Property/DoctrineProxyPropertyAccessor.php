@@ -17,7 +17,7 @@ final readonly class DoctrineProxyPropertyAccessor implements PropertyAccessInte
 
     public function getValue(object $object, Property $property): mixed
     {
-        if (\interface_exists(Proxy::class) && \is_a($object, Proxy::class) && !$object->__isInitialized()) {
+        if (\interface_exists(Proxy::class) && $object instanceof Proxy && !$object->__isInitialized()) {
             $object->__load();
         }
 
@@ -26,7 +26,7 @@ final readonly class DoctrineProxyPropertyAccessor implements PropertyAccessInte
 
     public function setValue(object $object, Property $property, mixed $value): void
     {
-        if (\interface_exists(Proxy::class) && \is_a($object, Proxy::class) && !$object->__isInitialized()) {
+        if (\interface_exists(Proxy::class) && $object instanceof Proxy && !$object->__isInitialized()) {
             $object->__load();
         }
 

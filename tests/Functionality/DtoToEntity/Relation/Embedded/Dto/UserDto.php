@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-
 namespace Zjk\DtoMapper\Tests\Functionality\DtoToEntity\Relation\Embedded\Dto;
 
 use Zjk\DtoMapper\Attribute\Entity;

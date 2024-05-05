@@ -49,7 +49,7 @@ final class RelationWeakObjectTest extends KernelTestCase
         /**
          * @phpstan-ignore-next-line
          */
-        $initialStateImageIds = \array_map(static fn(Image $expert): string => $expert->getIdentifier(), $media->getImage()->toArray());
+        $initialStateImageIds = \array_map(static fn (Image $expert): string => $expert->getIdentifier(), $media->getImage()->toArray());
 
         $this->assertEquals(
             ['a0b51430-c935-41ee-9877-af39637ab24c'],
@@ -83,7 +83,7 @@ final class RelationWeakObjectTest extends KernelTestCase
         /**
          * @phpstan-ignore-next-line
          */
-        $imageName = \array_map(static fn(Image $image): string => $image->getName(), $media->getImage()->toArray());
+        $imageName = \array_map(static fn (Image $image): string => $image->getName(), $media->getImage()->toArray());
 
         // The entity has been added from the relation
         $this->assertSame([], \array_diff($imageName, ['Image add', 'Image 3']));
@@ -103,7 +103,7 @@ final class RelationWeakObjectTest extends KernelTestCase
         /**
          * @phpstan-ignore-next-line
          */
-        $initialStateImageIds = \array_map(static fn(Image $expert): string => $expert->getIdentifier(), $media->getImage()->toArray());
+        $initialStateImageIds = \array_map(static fn (Image $expert): string => $expert->getIdentifier(), $media->getImage()->toArray());
 
         $this->assertEquals(
             [

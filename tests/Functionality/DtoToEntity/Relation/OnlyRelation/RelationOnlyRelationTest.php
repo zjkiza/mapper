@@ -47,7 +47,7 @@ final class RelationOnlyRelationTest extends KernelTestCase
         /**
          * @phpstan-ignore-next-line
          */
-        $initialStateExpertIds = \array_map(static fn(Expert $expert): string => $expert->getIdentifier(), $media->getExpert()->toArray());
+        $initialStateExpertIds = \array_map(static fn (Expert $expert): string => $expert->getIdentifier(), $media->getExpert()->toArray());
 
         $this->assertEquals(
             [
@@ -75,7 +75,7 @@ final class RelationOnlyRelationTest extends KernelTestCase
         /**
          * @phpstan-ignore-next-line
          */
-        $addedExpertIds = \array_map(static fn(Expert $expert): string => $expert->getIdentifier(), $media->getExpert()->toArray());
+        $addedExpertIds = \array_map(static fn (Expert $expert): string => $expert->getIdentifier(), $media->getExpert()->toArray());
 
         $this->assertEquals(
             [
@@ -94,7 +94,7 @@ final class RelationOnlyRelationTest extends KernelTestCase
         /**
          * @phpstan-ignore-next-line
          */
-        $initialStateExpertIds = \array_map(static fn(Expert $expert): string => $expert->getIdentifier(), $media->getExpert()->toArray());
+        $initialStateExpertIds = \array_map(static fn (Expert $expert): string => $expert->getIdentifier(), $media->getExpert()->toArray());
 
         $this->assertEquals(
             [
@@ -119,7 +119,7 @@ final class RelationOnlyRelationTest extends KernelTestCase
         /**
          * @phpstan-ignore-next-line
          */
-        $addedExpertIds = \array_map(static fn(Expert $expert): string => $expert->getIdentifier(), $media->getExpert()->toArray());
+        $addedExpertIds = \array_map(static fn (Expert $expert): string => $expert->getIdentifier(), $media->getExpert()->toArray());
 
         $this->assertEquals(
             [],

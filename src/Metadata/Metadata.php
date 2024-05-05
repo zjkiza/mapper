@@ -8,12 +8,12 @@ final class Metadata
 {
     /**
      * @param array<string, Property> $properties
-     * @param class-string $classNameDto
+     * @param class-string            $classNameDto
      */
     public function __construct(
         protected EntityMetadata $entityMetadata,
-        protected string         $classNameDto,
-        protected array          $properties
+        protected string $classNameDto,
+        protected array $properties
     ) {
     }
 
@@ -40,7 +40,7 @@ final class Metadata
 
     /**
      * @param array<string, Property> $property
-     * @param class-string $className
+     * @param class-string            $className
      */
     public static function create(EntityMetadata $entityMetadata, string $className, array $property): self
     {

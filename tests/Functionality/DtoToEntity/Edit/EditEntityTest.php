@@ -4,14 +4,11 @@ declare(strict_types=1);
 
 namespace Zjk\DtoMapper\Tests\Functionality\DtoToEntity\Edit;
 
-use Doctrine\Persistence\ManagerRegistry;
-use Doctrine\Persistence\ObjectRepository;
 use Zjk\DtoMapper\Contract\MapperInterface;
 use Zjk\DtoMapper\Exception\TypeError;
 use Zjk\DtoMapper\Tests\Functionality\DtoToEntity\Edit\Dto\ExpertEditDto;
 use Zjk\DtoMapper\Tests\Functionality\DtoToEntity\Edit\Dto\ExpertEditWithSetterDto;
 use Zjk\DtoMapper\Tests\Resources\App\Entities\Expert;
-use Zjk\DtoMapper\Tests\Resources\App\Entities\Media;
 use Zjk\DtoMapper\Tests\Resources\KernelTestCase;
 
 final class EditEntityTest extends KernelTestCase

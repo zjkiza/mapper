@@ -17,9 +17,6 @@ use Zjk\DtoMapper\Contract\DataTransformerInterface;
  */
 final class Extension extends SymfonyExtension
 {
-    /**
-     * {@inheritdoc}
-     */
     public function load(array $configs, ContainerBuilder $container): void
     {
         /** @var RowConfiguration $config */
@@ -37,9 +34,6 @@ final class Extension extends SymfonyExtension
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getAlias(): string
     {
         return 'zjk_dto_mapper';

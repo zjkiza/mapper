@@ -33,8 +33,6 @@ services:
                 PHP_XDEBUG_REMOTE_ADDRESS:  ${PHP_XDEBUG_REMOTE_ADDRESS}
                 PHP_XDEBUG_IDEKEY:          ${PHP_XDEBUG_IDEKEY}
         extra_hosts:
-            # Ensure that host.docker.internal is correctly defined on Linux bez toga nece raditi debagovanje preko comandne linije
-            # ubaciti CLI interpreter u setting / PHP -> CLI interpreter
             - host.docker.internal:host-gateway
         env_file:
             - .env

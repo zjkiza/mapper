@@ -169,16 +169,16 @@ final class TestFixtures extends Fixture
 
     private function getExpert(string $id): Expert
     {
-        return $this->getReference($id);
+        return $this->getReference($id, Expert::class);
     }
 
     private function getImage(string $id): Image
     {
-        return $this->getReference($id);
+        return $this->getReference($id, Image::class);
     }
 
     private function getUser(string $id): User
     {
-        return $this->getReference($id);
+        return $this->getReference($id, User::class);
     }
 }
