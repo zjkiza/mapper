@@ -22,10 +22,7 @@ final class RelationWeakObjectTest extends KernelTestCase
     {
         parent::setUp();
 
-        /* @phpstan-ignore-next-line */
         $this->entityManager = $this->getContainer()->get('doctrine.orm.entity_manager');
-
-        /* @phpstan-ignore-next-line */
         $this->mapper = $this->getContainer()->get(MapperInterface::class);
     }
 

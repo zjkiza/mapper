@@ -6,6 +6,5 @@
 /bin
 /build
 /vendor
-composer.lock
 .env
 /tests/Resources/var/*

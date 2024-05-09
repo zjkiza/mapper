@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.7.2]
+### Fixed
+- Namespace in unit tests
+- Fix changelog
+### Added
+- phpstan-symfony
+- Updated version of php in docker from 8.2 to 8.3
+
+## [0.7.1]
+### Added
+- Optimized code.
+- Unused file removed.
+- Added class name to reference (for data-fixtures)
+
 ## [0.7.0]
 ### Fixed  
 - Bug : the command `bin/console debug:config zjk_dto_mapper` gave an error. 

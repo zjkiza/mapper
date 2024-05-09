@@ -19,7 +19,6 @@ final class EditEntityTest extends KernelTestCase
     {
         parent::setUp();
 
-        /* @phpstan-ignore-next-line */
         $this->mapper = $this->getContainer()->get(MapperInterface::class);
     }
 

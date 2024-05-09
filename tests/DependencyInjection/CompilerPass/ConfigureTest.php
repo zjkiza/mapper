@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace DependencyInjection\CompillerPass;
+namespace Zjk\DtoMapper\Tests\DependencyInjection\CompilerPass;
 
 use Matthias\SymfonyDependencyInjectionTest\PhpUnit\AbstractCompilerPassTestCase;
 use Symfony\Component\DependencyInjection\ContainerBuilder;

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace DependencyInjection;
+namespace Zjk\DtoMapper\Tests\DependencyInjection;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;

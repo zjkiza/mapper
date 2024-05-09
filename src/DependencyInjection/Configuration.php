@@ -16,7 +16,6 @@ final class Configuration implements ConfigurationInterface
 
         /**
          * @psalm-suppress PossiblyNullReference, PossiblyUndefinedMethod, UndefinedMethod
-         * @phpstan-ignore-next-line
          */
         $rootNode
             ->addDefaultsIfNotSet()

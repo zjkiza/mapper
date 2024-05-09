@@ -1,4 +1,4 @@
-FROM php:8.2-cli
+FROM php:8.3-cli
 
 RUN apt-get update --fix-missing
 RUN apt-get update && apt-get install -y \
@@ -31,13 +31,13 @@ RUN docker-php-ext-install bcmath exif gd gettext pdo pdo_mysql mysqli zip opcac
 
 RUN pecl install apcu && docker-php-ext-enable apcu
 
-RUN pecl install xdebug-3.2.2
+RUN pecl install xdebug
 
-#####################################################################################
-#                                                                                   #
-#                                 Setup Composer                                    #
-#                                                                                   #
-#####################################################################################
+#####################
+#                   #
+#   Setup Composer  #
+#                   #
+#####################
 
 WORKDIR /tmp
 
@@ -60,11 +60,11 @@ RUN mv /tmp/composer.phar /usr/local/bin/composer.phar && \
     ln -s /usr/local/bin/composer.phar /usr/local/bin/composer && \
     chmod +x /usr/local/bin/composer
 
-#####################################################################################
-#                                                                                   #
-#                                       Configure                                   #
-#                                                                                   #
-#####################################################################################
+#################
+#               #
+#   Configure   #
+#               #
+#################
 
 ARG SYSTEM_TIMEZONE=UTC
 
@@ -91,24 +91,23 @@ ADD docker/php/conf /tmp
 RUN chmod +x /tmp/configure.sh
 RUN /tmp/configure.sh
 
-#####################################################################################
-#                                                                                   #
-#                                        End                                        #
-#                                                                                   #
-#####################################################################################
+#################################
+#                               #
+#   Add GitHub to known hosts   #
+#                               #
+#################################
 
-######################################################################################
- 
-# Add GitHub to known hosts
 RUN cd; mkdir .ssh; chmod 0700 .ssh; touch /root/.ssh/known_hosts
 RUN ssh-keyscan github.com >> /root/.ssh/known_hosts
-
 
 WORKDIR /www
 COPY --chown=${LOCAL_USER} . /www
 
-#####################################
-# Odrzaca podignut kontejner !!!!
+#################################
+#                               #
+#   Holds a raised container    #
+#                               #
+#################################
 
 COPY docker/php/cmd.sh /usr/local/bin/cmd.sh
 RUN chmod +x /usr/local/bin/cmd.sh

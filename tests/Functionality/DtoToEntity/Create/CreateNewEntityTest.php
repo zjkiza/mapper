@@ -26,7 +26,6 @@ final class CreateNewEntityTest extends KernelTestCase
     {
         parent::setUp();
 
-        /* @phpstan-ignore-next-line */
         $this->mapper = $this->getContainer()->get(MapperInterface::class);
     }
 

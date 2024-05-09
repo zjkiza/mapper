@@ -32,11 +32,8 @@ final class AttributeExceptionTest extends KernelTestCase
     {
         parent::setUp();
 
-        /* @phpstan-ignore-next-line */
         $this->doctrine = $this->getContainer()->get(ManagerRegistry::class);
-        /* @phpstan-ignore-next-line */
         $this->mediaRepository = $this->doctrine->getRepository(Media::class);
-        /* @phpstan-ignore-next-line */
         $this->mapper = $this->getContainer()->get(MapperInterface::class);
     }
 
