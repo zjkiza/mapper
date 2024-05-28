@@ -6,12 +6,27 @@ namespace Zjk\DtoMapper\Metadata;
 
 final class EntityMetadata
 {
+    /**
+     * @var class-string
+     */
+    protected string $className;
+
+    private readonly bool $newEntity;
+
+    /**
+     * @param class-string $className
+     */
     public function __construct(
-        protected string $className,
-        private readonly bool $newEntity = false
+        string $className,
+        bool $newEntity = false
     ) {
+        $this->className = $className;
+        $this->newEntity = $newEntity;
     }
 
+    /**
+     * @return class-string
+     */
     public function getClassName(): string
     {
         return $this->className;
@@ -22,6 +37,9 @@ final class EntityMetadata
         return $this->newEntity;
     }
 
+    /**
+     * @param class-string $entity
+     */
     public static function create(string $entity, bool $newEntity = false): self
     {
         return new self($entity, $newEntity);

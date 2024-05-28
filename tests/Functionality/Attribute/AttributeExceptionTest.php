@@ -51,9 +51,15 @@ final class AttributeExceptionTest extends KernelTestCase
     public function testExpectExceptionWhenInAttributeCollectionThePropertyClassNameWithThisNameIsNotExist(): void
     {
         $this->expectException(\ReflectionException::class);
+        /**
+         * @psalm-suppress UndefinedClass
+         */
         $this->expectExceptionMessage(\sprintf('Class "%s" does not exist', Lorem::class)); // @phpstan-ignore-line
 
         $dto = new #[Entity(Media::class)] class {
+            /**
+             * @psalm-suppress UndefinedClass
+             */
             #[Collection(Lorem::class)] // @phpstan-ignore-line
             public ?array $expert = null; // @phpstan-ignore-line
         };
@@ -67,9 +73,15 @@ final class AttributeExceptionTest extends KernelTestCase
     public function testExpectExceptionWhenInAttributeDtoThePropertyClassNameWithThisNameIsNotExist(): void
     {
         $this->expectException(\ReflectionException::class);
+        /**
+         * @psalm-suppress UndefinedClass
+         */
         $this->expectExceptionMessage(\sprintf('Class "%s" does not exist', Lorem::class)); // @phpstan-ignore-line
 
         $dto = new #[Entity(Media::class)] class {
+            /**
+             * @psalm-suppress UndefinedClass
+             */
             #[Dto(Lorem::class)] // @phpstan-ignore-line
             public ?array $expert = null; // @phpstan-ignore-line
         };
@@ -115,8 +127,14 @@ final class AttributeExceptionTest extends KernelTestCase
     public function testExpectExceptionWhenInAttributeEntityThePropertyNameClassWithThisNameIsNotExist(): void
     {
         $this->expectException(InvalidClassException::class);
+        /**
+         * @psalm-suppress UndefinedClass
+         */
         $this->expectExceptionMessage(\sprintf('In Attribute Entity in the property name="%s", class with this name is not exist.', Lorem::class)); // @phpstan-ignore-line
 
+        /**
+         * @psalm-suppress UndefinedClass
+         */
         $dto = new #[Entity(Lorem::class)] class { // @phpstan-ignore-line
             public ?string $name = null;
         };

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Zjk\DtoMapper\Tests\Functionality\EntityToDto\Dto;
 
 use Zjk\DtoMapper\Attribute\Entity;

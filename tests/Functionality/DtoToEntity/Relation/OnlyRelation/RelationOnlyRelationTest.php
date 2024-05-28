@@ -22,6 +22,7 @@ final class RelationOnlyRelationTest extends KernelTestCase
     {
         parent::setUp();
 
+        /** @psalm-suppress PropertyTypeCoercion */
         $this->entityManager = $this->getContainer()->get('doctrine.orm.entity_manager');
         $this->mapper = $this->getContainer()->get(MapperInterface::class);
     }

@@ -94,7 +94,6 @@ final class ReflectionMetadata
         foreach ($properties as $property) {
             foreach ($property->getAttributes() as $attribute) {
                 $attributeName = $attribute->getName();
-                \assert(\is_string($attributeName));
 
                 // Make sure we only get ZJK RelationAttributeInterface
                 if (!\is_subclass_of($attributeName, RelationAttributeInterface::class)) {

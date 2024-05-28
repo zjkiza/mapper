@@ -33,6 +33,7 @@ final readonly class RelationMetadata
 
     public static function create(string $strategy, RelationAttributeInterface $relationAttributeInstance): self
     {
+        /** @psalm-suppress InvalidArrayOffset */
         return new self(
             $strategy,
             Settings::MAPPER_LOCAL_FUNCTION[$relationAttributeInstance::class],

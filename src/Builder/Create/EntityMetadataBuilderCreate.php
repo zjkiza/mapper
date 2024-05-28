@@ -37,7 +37,6 @@ final class EntityMetadataBuilderCreate
 
         foreach ($reflectionClass->getAttributes() as $attribute) {
             $attributeName = $attribute->getName();
-            \assert(\is_string($attributeName));
 
             // Make sure we only get ZJK Attributes
             if (!\is_subclass_of($attributeName, ClassAttributeInterface::class)) {

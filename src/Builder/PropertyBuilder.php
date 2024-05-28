@@ -9,6 +9,9 @@ use Zjk\DtoMapper\Metadata\Property;
 use Zjk\DtoMapper\Metadata\RepositoryMetadata;
 use Zjk\DtoMapper\Metadata\TransformerMetadata;
 
+/**
+ * @psalm-suppress PropertyNotSetInConstructor
+ */
 final class PropertyBuilder
 {
     private string $getter;

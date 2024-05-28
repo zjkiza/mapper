@@ -23,6 +23,15 @@ use Zjk\DtoMapper\Metadata\Property;
 use Zjk\DtoMapper\Exception\NotExistAttribute;
 use Zjk\DtoMapper\Metadata\RepositoryMetadata;
 
+use function Zjk\DtoMapper\checkIsAllValuesInArraySameType;
+use function Zjk\DtoMapper\iterable_to_array;
+
+/**
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ * @SuppressWarnings(PHPMD.ElseExpression)
+ */
 final class Mapper implements MapperInterface
 {
     /**
@@ -39,18 +48,12 @@ final class Mapper implements MapperInterface
     ) {
     }
 
-    /**
-     * @template T of object
-     *
-     * @param T|class-string<T> $target
-     *
-     * @return array<int, T>
-     */
     public function fromCollectionEntityToDto(iterable $collections, object|string $target): array
     {
         $dto = [];
 
         foreach ($collections as $source) {
+            /** @psalm-var class-string $target */
             $dto[] = $this->fromObjectEntityToDto($source, $target);
         }
 
@@ -60,7 +63,7 @@ final class Mapper implements MapperInterface
     /**
      * @template T of object
      *
-     * @param T|class-string<T> $target
+     * @param T|class-string $target
      *
      * @return array<int, T>
      */
@@ -80,15 +83,6 @@ final class Mapper implements MapperInterface
         return $entities;
     }
 
-    /**
-     * @template T of object
-     *
-     * @param T|class-string<T> $dto
-     *
-     * @phpstan-return T
-     *
-     * @throws \ReflectionException
-     */
     public function fromObjectEntityToDto(object $entity, object|string $dto): object
     {
         if (!\is_object($dto)) {
@@ -122,15 +116,6 @@ final class Mapper implements MapperInterface
         return $dto;
     }
 
-    /**
-     * @template T of object
-     *
-     * @param object|class-string<T> $entity
-     *
-     * @retrun T
-     *
-     * @throws \ReflectionException|NotExistAttribute
-     */
     public function fromObjectDtoToEntity(object $dto, object|string $entity): object
     {
         $metadata = $this->getBoostedMetadata($dto);
@@ -228,22 +213,25 @@ final class Mapper implements MapperInterface
         $newKeys = \array_keys($newCollection);
         $previousKeyKeys = \array_keys($previousCollection);
 
+        /** @var string[] $addKey */
         $addKey = \array_diff($newKeys, $previousKeyKeys);
+        /** @var string[] $removeKey */
         $removeKey = \array_diff($previousKeyKeys, $newKeys);
+        /** @var string[] $editKey */
         $editKey = \array_intersect($newKeys, $previousKeyKeys);
 
         // Add new relation
-        \array_walk($addKey, static function ($key) use ($entity, $repositoryMetadata, $newCollection): void {
+        \array_walk($addKey, static function (string $key) use ($entity, $repositoryMetadata, $newCollection): void {
             $entity->{$repositoryMetadata->getAddMethod()}($newCollection[$key]);
         });
 
         // Remove
-        \array_walk($removeKey, static function ($key) use ($entity, $repositoryMetadata, $previousCollection): void {
+        \array_walk($removeKey, static function (string $key) use ($entity, $repositoryMetadata, $previousCollection): void {
             $entity->{$repositoryMetadata->getRemoveMethod()}($previousCollection[$key]);
         });
 
         // Edit : Replace - remove old and add new
-        \array_walk($editKey, static function ($key) use ($entity, $repositoryMetadata, $previousCollection, $newCollection): void {
+        \array_walk($editKey, static function (string $key) use ($entity, $repositoryMetadata, $previousCollection, $newCollection): void {
             $entity->{$repositoryMetadata->getRemoveMethod()}($previousCollection[$key]);
             $entity->{$repositoryMetadata->getAddMethod()}($newCollection[$key]);
         });
@@ -385,7 +373,7 @@ final class Mapper implements MapperInterface
         $collection = $this->repository->findAllByIdentifiers($ids, $class);
 
         /** @var T[] $arrayFromCollection */
-        $arrayFromCollection = \iterator_to_array($collection);
+        $arrayFromCollection = iterable_to_array($collection);
 
         if (\count($ids) !== \count($arrayFromCollection)) {
             throw new RuntimeException(\sprintf('There are duplicate entities with ids "%s" in collection "%s". In DTO "%s", you must insert a validator to check for duplicates in the input collection.', \implode(', ', \array_diff_assoc($ids, \array_unique($ids))), $metadata->getEntityMetadata()->getClassName(), $dto::class));
@@ -437,6 +425,7 @@ final class Mapper implements MapperInterface
         /** @var IdentifierInterface[] $previousArrayFromDatabase */
         $previousArrayFromDatabase = $arrayCollection->toArray();
 
+        /** @psalm-suppress DocblockTypeContradiction */
         if (!\is_array($previousArrayFromDatabase) || false === (bool) $previousArrayFromDatabase) {
             return [];
         }
@@ -481,6 +470,7 @@ final class Mapper implements MapperInterface
         ];
 
         try {
+            /** @psalm-suppress InvalidStringClass */
             return new $entityClassName(...$idValue);
         } catch (\TypeError) {
             throw new TypeError(\sprintf('A new entity cannot be created. Id argument in dto "%s" must by same type with entity. Use the transformer on the ID property to convert it to a type like in entity "%s".', $dtoIdentifier->getDtoClass(), $dtoIdentifier->getEntityClass()));

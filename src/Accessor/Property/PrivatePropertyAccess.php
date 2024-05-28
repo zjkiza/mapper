@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Zjk\DtoMapper\Accessor\Property;
 
 use Zjk\DtoMapper\Contract\PropertyAccessInterface;

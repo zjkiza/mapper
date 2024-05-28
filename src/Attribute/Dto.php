@@ -10,13 +10,15 @@ use Zjk\DtoMapper\Contract\RelationAttributeInterface;
 #[\Attribute(\Attribute::TARGET_PROPERTY)]
 final readonly class Dto implements PropertyAttributeInterface, RelationAttributeInterface
 {
+    /** @var class-string */
+    private string $className;
+
     /**
-     * @phpstan-param  class-string $className
+     * @param class-string $className
      */
-    public function __construct(
-        /** @phpstan-var  class-string  */
-        private string $className
-    ) {
+    public function __construct(string $className)
+    {
+        $this->className = $className;
     }
 
     public function getClassNameDto(): string

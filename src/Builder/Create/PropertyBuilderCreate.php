@@ -19,6 +19,9 @@ use Zjk\DtoMapper\Metadata\EntityMetadata;
 use Zjk\DtoMapper\Metadata\Property;
 use Zjk\DtoMapper\Settings\Settings;
 
+/**
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ */
 final class PropertyBuilderCreate
 {
     /**
@@ -51,7 +54,6 @@ final class PropertyBuilderCreate
 
         foreach ($property->getAttributes() as $attribute) {
             $attributeName = $attribute->getName();
-            \assert(\is_string($attributeName));
 
             // Make sure we only get ZJK Attributes
             if (!\is_subclass_of($attributeName, PropertyAttributeInterface::class)) {

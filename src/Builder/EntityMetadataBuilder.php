@@ -7,8 +7,14 @@ namespace Zjk\DtoMapper\Builder;
 use Zjk\DtoMapper\Exception\NotExistAttribute;
 use Zjk\DtoMapper\Metadata\EntityMetadata;
 
+/**
+ * @psalm-suppress PropertyNotSetInConstructor
+ */
 final class EntityMetadataBuilder
 {
+    /**
+     * @var class-string
+     */
     private string $entity;
 
     private bool $newEntity = false;
@@ -22,6 +28,9 @@ final class EntityMetadataBuilder
         return new self();
     }
 
+    /**
+     * @param class-string $entity
+     */
     public function setEntity(string $entity): EntityMetadataBuilder
     {
         $this->entity = $entity;

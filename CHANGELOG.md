@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.7.3]
+### Added
+- psalm
+- phpmd
+
 ## [0.7.2]
 ### Fixed
 - Namespace in unit tests
