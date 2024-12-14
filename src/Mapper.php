@@ -23,9 +23,6 @@ use Zjk\DtoMapper\Metadata\Property;
 use Zjk\DtoMapper\Exception\NotExistAttribute;
 use Zjk\DtoMapper\Metadata\RepositoryMetadata;
 
-use function Zjk\DtoMapper\checkIsAllValuesInArraySameType;
-use function Zjk\DtoMapper\iterable_to_array;
-
 /**
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)

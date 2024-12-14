@@ -14,6 +14,13 @@ use Zjk\DtoMapper\Contract\DataTransformerInterface;
  * @psalm-type RowConfiguration = array{
  *     cache_pool?: string
  * }
+ *
+ * Notice for symfony 8.1 support you need change Symfony\Component\HttpKernel\DependencyInjection\Extension
+ * to  Symfony\Component\DependencyInjection\Extension\Extension
+ *
+ * TODO : Add support for both, due to old versions
+ *
+ * @psalm-suppress InternalClass
  */
 final class Extension extends SymfonyExtension
 {

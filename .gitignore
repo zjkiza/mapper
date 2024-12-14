@@ -3,8 +3,10 @@
 
 /.idea
 /var
-/bin
 /build
 /vendor
 .env
 /tests/Resources/var/*
+/bin/.idea
+/bin/__pycache__
+/bin/utility/__pycache__
