@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.7.5]
+
+### Added
+- Continuous Integration script optimization.
+
 ## [0.7.4]
 
 ### Added

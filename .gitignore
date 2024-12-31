@@ -9,5 +9,7 @@
 /tests/Resources/var/*
 /bin/.idea
 /bin/__pycache__
-/bin/utility/__pycache__
+/bin/manager/__pycache__
+/bin/config/__pycache__
+/bin/typed_property/__pycache__
 /venv/

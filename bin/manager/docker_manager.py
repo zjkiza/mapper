@@ -1,34 +1,47 @@
+from __future__ import annotations
+from typing import final, List, Optional
+from dotenv import dotenv_values
+from rich.console import Console
+from rich.markdown import Markdown
+from bin.config.config import container_db, docker_compose_files_list, containers, phpunit_code_error_bypass, ping_db
 import re
 import os
 import time
 import subprocess
-from dotenv import dotenv_values
-from rich.console import Console
-from rich.markdown import Markdown
+from pydantic import BaseModel, Field
 
 
-class DockerManager:
-    def __init__(
-            self,
-            verbose: bool,
-            docker_compose_files_list: list[str],
-            containers: list[str],
-            container_db: str | None = None,
-            waiting_db_connection: bool = False,
-            phpunit_code_error_bypass: bool = False,
-    ) -> None:
-        self.verbose: bool = verbose
-        self.docker_compose_files_list: list[str] = docker_compose_files_list
-        self.containers: list[str] = containers
-        self.container_db: str | None = container_db
-        self.waiting_db_connection: bool = waiting_db_connection
-        self.phpunit_code_error_bypass: bool = phpunit_code_error_bypass
-        self.console: Console = Console()
-        self.working_directory: str = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+@final
+class DockerManager(BaseModel):
+
+    verbose: bool
+    docker_compose_files_list: List[str]
+    containers: List[str]
+    container_db: Optional[str] = None
+    ping_db: Optional[str] = None
+    waiting_db_connection: bool = False
+    phpunit_code_error_bypass: bool = False
+    console: Console = Field(default_factory=Console)
+    working_directory: str = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+
+    class Config:
+        arbitrary_types_allowed = True
 
     @property
     def docker_compose_files(self) -> str:
         return ' -f '.join(self.docker_compose_files_list)
+
+    @classmethod
+    def create(cls, verbose: bool = True, waiting_db: bool = False) -> DockerManager:
+        return cls(
+            verbose=verbose,
+            waiting_db_connection=waiting_db,
+            docker_compose_files_list=docker_compose_files_list,
+            containers=containers,
+            container_db=container_db,
+            ping_db=ping_db,
+            phpunit_code_error_bypass=phpunit_code_error_bypass
+        )
 
     def run_container(self) -> None:
         os.chdir(self.working_directory)
@@ -101,7 +114,7 @@ class DockerManager:
         for i in range(3):
             try:
                 subprocess.run(
-                    f'docker exec {self.container_db} sh -c "mysqladmin ping -h localhost --silent"',
+                    f'docker exec {self.container_db} sh -c "{self.ping_db}"',
                     shell=True,
                     check=True
                 )
