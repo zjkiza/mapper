@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.7.6]
+
+### Added
+- Raised versions of phpstan and rector and up dependency.
+
 ## [0.7.5]
 
 ### Added

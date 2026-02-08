@@ -20,6 +20,7 @@ use Zjk\DtoMapper\Metadata\Property;
 use Zjk\DtoMapper\Settings\Settings;
 
 /**
+ * @phpstan-ignore-next-line
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 final class PropertyBuilderCreate
