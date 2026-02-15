@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.7.7]
+
+### Fixed
+- Dependency, removed composer.lock
+
 ## [0.7.6]
 
 ### Added

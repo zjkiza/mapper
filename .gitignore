@@ -13,3 +13,4 @@
 /bin/config/__pycache__
 /bin/typed_property/__pycache__
 /venv/
+composer.lock
