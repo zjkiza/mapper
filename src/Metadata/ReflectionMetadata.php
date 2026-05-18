@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Zjk\DtoMapper\Metadata;
 
+use Symfony\Contracts\Service\ResetInterface;
 use Zjk\DtoMapper\Attribute\Collection;
 use Zjk\DtoMapper\Attribute\Dto;
 use Zjk\DtoMapper\Attribute\Ignore;
@@ -12,7 +13,7 @@ use Zjk\DtoMapper\Builder\Create\PropertyBuilderCreate;
 use Zjk\DtoMapper\Contract\RelationAttributeInterface;
 use Zjk\DtoMapper\Exception\RuntimeException;
 
-final class ReflectionMetadata
+final class ReflectionMetadata implements ResetInterface
 {
     /** @var array<class-string, Metadata> */
     private array $dtosMetadata = [];
@@ -22,7 +23,7 @@ final class ReflectionMetadata
 
     public function __construct(
         private readonly PropertyBuilderCreate $propertyActionBuilder,
-        private readonly EntityMetadataBuilderCreate $entityMetadataActionBuilder
+        private readonly EntityMetadataBuilderCreate $entityMetadataActionBuilder,
     ) {
     }
 
@@ -56,7 +57,7 @@ final class ReflectionMetadata
      */
     public function getMetadata(\ReflectionClass $reflectionClass): Metadata
     {
-        /** @var Property[] $dtoProperty */
+        /** @var array<string, Property> $dtoProperty */
         $dtoProperty = [];
 
         $entityMetadata = $this->entityMetadataActionBuilder->create($reflectionClass);
@@ -73,6 +74,12 @@ final class ReflectionMetadata
         }
 
         return Metadata::create($entityMetadata, $reflectionClass->getName(), $dtoProperty);
+    }
+
+    public function reset(): void
+    {
+        $this->dtosMetadata = [];
+        $this->dtosMapped = [];
     }
 
     /**
@@ -95,14 +102,12 @@ final class ReflectionMetadata
             foreach ($property->getAttributes() as $attribute) {
                 $attributeName = $attribute->getName();
 
-                // Make sure we only get ZJK RelationAttributeInterface
                 if (!\is_subclass_of($attributeName, RelationAttributeInterface::class)) {
                     continue;
                 }
 
                 /** @var Collection|Dto $attributeInstance */
                 $attributeInstance = $attribute->newInstance();
-                \assert($attributeInstance instanceof RelationAttributeInterface);
 
                 $object = new \ReflectionClass($attributeInstance->getClassNameDto());
                 $this->createDtosMapped($object);
@@ -110,7 +115,7 @@ final class ReflectionMetadata
         }
     }
 
-    protected function isIgnored(\ReflectionProperty $property): bool
+    private function isIgnored(\ReflectionProperty $property): bool
     {
         $attributes = $property->getAttributes(Ignore::class);
 

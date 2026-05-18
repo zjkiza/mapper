@@ -8,13 +8,13 @@ namespace Zjk\DtoMapper\Metadata;
  * DTO identifier store
  * ID value after transformer and all data for this property.
  */
-final class DtoIdentifier
+final readonly class DtoIdentifier
 {
     public function __construct(
-        protected string $dtoClass,
-        protected string $entityClass,
-        protected Property $property,
-        protected mixed $value
+        private string $dtoClass,
+        private string $entityClass,
+        private Property $property,
+        private mixed $value,
     ) {
     }
 

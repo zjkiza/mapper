@@ -4,24 +4,13 @@ declare(strict_types=1);
 
 namespace Zjk\DtoMapper\Metadata;
 
-final class EntityMetadata
+final readonly class EntityMetadata
 {
-    /**
-     * @var class-string
-     */
-    protected string $className;
-
-    private readonly bool $newEntity;
-
     /**
      * @param class-string $className
      */
-    public function __construct(
-        string $className,
-        bool $newEntity = false
-    ) {
-        $this->className = $className;
-        $this->newEntity = $newEntity;
+    public function __construct(private string $className, private bool $newEntity = false)
+    {
     }
 
     /**

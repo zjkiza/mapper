@@ -27,56 +27,56 @@ final class PropertyBuilder
     {
     }
 
-    public function setGetter(string $getter): PropertyBuilder
+    public function setGetter(string $getter): self
     {
         $this->getter = $getter;
 
         return $this;
     }
 
-    public function setSetter(string $setter): PropertyBuilder
+    public function setSetter(string $setter): self
     {
         $this->setter = $setter;
 
         return $this;
     }
 
-    public function setName(string $name): PropertyBuilder
+    public function setName(string $name): self
     {
         $this->name = $name;
 
         return $this;
     }
 
-    public function setIdentifier(bool $identifier): PropertyBuilder
+    public function setIdentifier(bool $identifier): self
     {
         $this->identifier = $identifier;
 
         return $this;
     }
 
-    public function setTransformerMetadata(?TransformerMetadata $transformerMetadata): PropertyBuilder
+    public function setTransformerMetadata(?TransformerMetadata $transformerMetadata): self
     {
         $this->transformerMetadata = $transformerMetadata;
 
         return $this;
     }
 
-    public function setLocalActionMetadata(?RelationMetadata $localActionMetadata): PropertyBuilder
+    public function setLocalActionMetadata(?RelationMetadata $localActionMetadata): self
     {
         $this->localActionMetadata = $localActionMetadata;
 
         return $this;
     }
 
-    public function setRepositoryMetadata(?RepositoryMetadata $repositoryMetadata): PropertyBuilder
+    public function setRepositoryMetadata(?RepositoryMetadata $repositoryMetadata): self
     {
         $this->repositoryMetadata = $repositoryMetadata;
 
         return $this;
     }
 
-    public static function creat(): self
+    public static function create(): self
     {
         return new self();
     }

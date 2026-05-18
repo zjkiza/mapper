@@ -22,7 +22,7 @@ final class CollectionStrategy implements PropertyStrategyInterface
         );
     }
 
-    public function kay(): string
+    public function key(): string
     {
         return Collection::class;
     }

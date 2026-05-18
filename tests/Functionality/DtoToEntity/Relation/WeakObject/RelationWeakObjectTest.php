@@ -179,4 +179,67 @@ final class RelationWeakObjectTest extends KernelTestCase
         $this->assertSame('Image 3 update', $images[0]->getName());
         $this->assertSame('a0b51430-c935-41ee-9877-af39637ab24c', $images[0]->getIdentifier());
     }
+
+    public function testCombinedAddRemoveEditInSingleCall(): void
+    {
+        $mediaId = '60b16643-d5e0-468a-8823-499fcf07684a';
+
+        /** @var Media $media */
+        $media = $this->entityManager->find(Media::class, $mediaId);
+
+        /** @var Image[] $images */
+        $images = $media->getImage()->toArray();
+
+        $this->assertCount(2, $images);
+        $initialIds = \array_map(static fn (Image $image): string => $image->getIdentifier(), $images);
+        $this->assertEqualsCanonicalizing(
+            ['a0b51430-c935-41ee-9877-af39637ab24a', 'a0b51430-c935-41ee-9877-af39637ab24b'],
+            $initialIds
+        );
+
+        $mediaDto = new MediaDto(
+            id: $mediaId,
+            image: [
+                new ImageDto(
+                    id: 'a0b51430-c935-41ee-9877-af39637ab24a',
+                    name: 'Image 1 updated'
+                ),
+                new ImageDto(
+                    id: 'a0b51430-c935-41ee-9877-af39637ab24d',
+                    name: 'Image 4'
+                ),
+            ],
+        );
+
+        $this->mapper->fromObjectDtoToEntity($mediaDto, Media::class);
+        $this->entityManager->flush();
+        $this->entityManager->clear();
+
+        /** @var Media $media */
+        $media = $this->entityManager->find(Media::class, $mediaId);
+
+        /** @var Image[] $images */
+        $images = $media->getImage()->toArray();
+
+        $this->assertCount(2, $images);
+
+        $resultIds = [];
+        $resultNames = [];
+
+        foreach ($images as $image) {
+            $resultIds[] = $image->getIdentifier();
+            $resultNames[$image->getIdentifier()] = $image->getName();
+        }
+
+        $this->assertEqualsCanonicalizing(
+            ['a0b51430-c935-41ee-9877-af39637ab24a', 'a0b51430-c935-41ee-9877-af39637ab24d'],
+            $resultIds
+        );
+
+        $this->assertSame('Image 1 updated', $resultNames['a0b51430-c935-41ee-9877-af39637ab24a']);
+        $this->assertSame('Image 4', $resultNames['a0b51430-c935-41ee-9877-af39637ab24d']);
+
+        $removedImage = $this->entityManager->find(Image::class, 'a0b51430-c935-41ee-9877-af39637ab24b');
+        $this->assertNull($removedImage);
+    }
 }

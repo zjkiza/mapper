@@ -14,12 +14,31 @@ interface MapperInterface
     public function fromCollectionEntityToDto(iterable $collections, object|string $target): array;
 
     /**
-     * @param iterable<object>    $collections
-     * @param object|class-string $target
+     * @param iterable<object> $collections
      *
-     * @return array<int, object>
+     * @return \Generator<int, object, mixed, void>
+     */
+    public function fromCollectionEntityToDtoLazy(iterable $collections, object|string $target): \Generator;
+
+    /**
+     * @template T of object
+     *
+     * @param iterable<object>  $collections
+     * @param T|class-string<T> $target
+     *
+     * @return array<int, T>
      */
     public function fromCollectionDtoToEntity(iterable $collections, object|string $target): array;
+
+    /**
+     * @template T of object
+     *
+     * @param iterable<object>  $collections
+     * @param T|class-string<T> $target
+     *
+     * @return \Generator<int, T, mixed, void>
+     */
+    public function fromCollectionDtoToEntityLazy(iterable $collections, object|string $target): \Generator;
 
     /**
      * @param object|class-string $dto
@@ -29,7 +48,8 @@ interface MapperInterface
     /**
      * @template T of object
      *
-     * @param T|class-string $entity
+     * @param T|class-string<T>          $entity
+     * @param array<string, object>|null $entityLookupMap
      */
-    public function fromObjectDtoToEntity(object $dto, object|string $entity): object;
+    public function fromObjectDtoToEntity(object $dto, object|string $entity, ?array $entityLookupMap = null): object;
 }

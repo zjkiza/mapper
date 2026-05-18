@@ -13,7 +13,7 @@ final readonly class RepositoryMetadata
         /**
          * Only a relation to another entity. There is no CRUD capability behind it.
          */
-        private bool $onlyRelation = false
+        private bool $onlyRelation = false,
     ) {
     }
 

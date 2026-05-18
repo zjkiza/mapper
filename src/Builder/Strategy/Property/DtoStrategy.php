@@ -22,7 +22,7 @@ final class DtoStrategy implements PropertyStrategyInterface
         );
     }
 
-    public function kay(): string
+    public function key(): string
     {
         return Dto::class;
     }

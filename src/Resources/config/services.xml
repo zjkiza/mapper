@@ -22,16 +22,58 @@
                 alias="Zjk\DtoMapper\Repository\DoctrineRepositoryRegistry"
         />
 
+        <!-- Property Strategies -->
+        <service id="Zjk\DtoMapper\Builder\Strategy\Property\CollectionStrategy">
+            <tag name="zjk_dto_mapper.property_strategy" />
+        </service>
+
+        <service id="Zjk\DtoMapper\Builder\Strategy\Property\DtoStrategy">
+            <tag name="zjk_dto_mapper.property_strategy" />
+        </service>
+
+        <service id="Zjk\DtoMapper\Builder\Strategy\Property\GetterStrategy">
+            <tag name="zjk_dto_mapper.property_strategy" />
+        </service>
+
+        <service id="Zjk\DtoMapper\Builder\Strategy\Property\IdentifierStrategy">
+            <tag name="zjk_dto_mapper.property_strategy" />
+        </service>
+
+        <service id="Zjk\DtoMapper\Builder\Strategy\Property\RepositoryStrategy">
+            <tag name="zjk_dto_mapper.property_strategy" />
+        </service>
+
+        <service id="Zjk\DtoMapper\Builder\Strategy\Property\SetterStrategy">
+            <tag name="zjk_dto_mapper.property_strategy" />
+        </service>
+
+        <service id="Zjk\DtoMapper\Builder\Strategy\Property\TransformerStrategy">
+            <tag name="zjk_dto_mapper.property_strategy" />
+        </service>
+
+        <!-- Entity Strategies -->
+        <service id="Zjk\DtoMapper\Builder\Strategy\Entity\EntityStrategy">
+            <tag name="zjk_dto_mapper.entity_strategy" />
+        </service>
+
+        <service id="Zjk\DtoMapper\Builder\Strategy\Entity\NewEntityStrategy">
+            <tag name="zjk_dto_mapper.entity_strategy" />
+        </service>
+
         <!-- Configure Builder -->
         <service
                 id="Zjk\DtoMapper\Builder\Create\PropertyBuilderCreate"
                 class="Zjk\DtoMapper\Builder\Create\PropertyBuilderCreate"
-        />
+        >
+            <argument type="tagged_iterator" tag="zjk_dto_mapper.property_strategy" />
+        </service>
 
         <service
                 id="Zjk\DtoMapper\Builder\Create\EntityMetadataBuilderCreate"
                 class="Zjk\DtoMapper\Builder\Create\EntityMetadataBuilderCreate"
-        />
+        >
+            <argument type="tagged_iterator" tag="zjk_dto_mapper.entity_strategy" />
+        </service>
 
         <service
                 id="Zjk\DtoMapper\Metadata\ReflectionMetadata"
@@ -83,6 +125,12 @@
                 alias="Zjk\DtoMapper\Transformer\Transformer"
         />
 
+        <!-- Configure Doctrine Proxy Initializer -->
+        <service
+                id="Zjk\DtoMapper\Accessor\Initializer\DoctrineProxyInitializer"
+                class="Zjk\DtoMapper\Accessor\Initializer\DoctrineProxyInitializer"
+        />
+
         <!-- Configure Accessor property -->
         <service
                 id="Zjk\DtoMapper\Accessor\Property\PrivatePropertyAccess"
@@ -96,6 +144,10 @@
             <argument
                     type="service"
                     id="Zjk\DtoMapper\Accessor\Property\PrivatePropertyAccess"
+            />
+            <argument
+                    type="service"
+                    id="Zjk\DtoMapper\Accessor\Initializer\DoctrineProxyInitializer"
             />
         </service>
 
@@ -117,6 +169,10 @@
             <argument
                     type="service"
                     id="Zjk\DtoMapper\Accessor\Method\PrivateMethodAccess"
+            />
+            <argument
+                    type="service"
+                    id="Zjk\DtoMapper\Accessor\Initializer\DoctrineProxyInitializer"
             />
         </service>
 
@@ -144,7 +200,7 @@
                 alias="Zjk\DtoMapper\Accessor\DefaultAccessor"
         />
 
-        <!-- Configure Metadata Rider -->
+        <!-- Configure Metadata Reader -->
         <service
                 id="Zjk\DtoMapper\Reader\MetadataReader"
                 class="Zjk\DtoMapper\Reader\MetadataReader"
@@ -161,32 +217,74 @@
                 alias="Zjk\DtoMapper\Reader\MetadataReader"
         />
 
+        <!-- Configure Mapping Services -->
+        <service
+                id="Zjk\DtoMapper\Mapping\IdentifierResolver"
+                class="Zjk\DtoMapper\Mapping\IdentifierResolver"
+        >
+            <argument type="service" id="Zjk\DtoMapper\Contract\MetadataReaderInterface" />
+            <argument type="service" id="Zjk\DtoMapper\Contract\DefaultAccessorInterface" />
+            <argument type="service" id="Zjk\DtoMapper\Contract\TransformerInterface" />
+        </service>
+
+        <service
+                id="Zjk\DtoMapper\Mapping\EntityFactory"
+                class="Zjk\DtoMapper\Mapping\EntityFactory"
+        >
+            <argument type="service" id="Zjk\DtoMapper\Contract\RepositoryInterface" />
+            <argument type="service" id="Zjk\DtoMapper\Contract\MetadataReaderInterface" />
+        </service>
+
+        <service
+                id="Zjk\DtoMapper\Mapping\SingleEntityToDtoMapper"
+                class="Zjk\DtoMapper\Mapping\SingleEntityToDtoMapper"
+        >
+            <argument type="service" id="Zjk\DtoMapper\Contract\MetadataReaderInterface" />
+            <argument type="service" id="Zjk\DtoMapper\Contract\DefaultAccessorInterface" />
+            <argument type="service" id="Zjk\DtoMapper\Contract\TransformerInterface" />
+        </service>
+
+        <service
+                id="Zjk\DtoMapper\Mapping\SingleDtoToEntityMapper"
+                class="Zjk\DtoMapper\Mapping\SingleDtoToEntityMapper"
+        >
+            <argument type="service" id="Doctrine\ORM\EntityManagerInterface" />
+            <argument type="service" id="Zjk\DtoMapper\Contract\MetadataReaderInterface" />
+            <argument type="service" id="Zjk\DtoMapper\Contract\DefaultAccessorInterface" />
+            <argument type="service" id="Zjk\DtoMapper\Contract\TransformerInterface" />
+            <argument type="service" id="Zjk\DtoMapper\Mapping\EntityFactory" />
+            <argument type="service" id="Zjk\DtoMapper\Mapping\RelationResolver" />
+            <argument type="service" id="Zjk\DtoMapper\Mapping\IdentifierResolver" />
+        </service>
+
+        <service
+                id="Zjk\DtoMapper\Mapping\RelationResolver"
+                class="Zjk\DtoMapper\Mapping\RelationResolver"
+        >
+            <argument type="service" id="Zjk\DtoMapper\Contract\RepositoryInterface" />
+            <argument type="service" id="Zjk\DtoMapper\Contract\DefaultAccessorInterface" />
+            <argument type="service" id="Zjk\DtoMapper\Mapping\IdentifierResolver" />
+        </service>
+
+        <service
+                id="Zjk\DtoMapper\Mapping\CollectionMapper"
+                class="Zjk\DtoMapper\Mapping\CollectionMapper"
+        >
+            <argument type="service" id="Zjk\DtoMapper\Mapping\SingleEntityToDtoMapper" />
+            <argument type="service" id="Zjk\DtoMapper\Mapping\SingleDtoToEntityMapper" />
+            <argument type="service" id="Zjk\DtoMapper\Mapping\EntityFactory" />
+            <argument type="service" id="Zjk\DtoMapper\Mapping\IdentifierResolver" />
+        </service>
+
         <!-- Configure Mapper -->
         <service
                 id="Zjk\DtoMapper\Mapper"
                 class="Zjk\DtoMapper\Mapper"
                 public="true"
         >
-            <argument
-                    type="service"
-                    id="Doctrine\ORM\EntityManagerInterface"
-            />
-            <argument
-                    type="service"
-                    id="Zjk\DtoMapper\Contract\RepositoryInterface"
-            />
-            <argument
-                    type="service"
-                    id="Zjk\DtoMapper\Contract\MetadataReaderInterface"
-            />
-            <argument
-                    type="service"
-                    id="Zjk\DtoMapper\Contract\DefaultAccessorInterface"
-            />
-            <argument
-                    type="service"
-                    id="Zjk\DtoMapper\Contract\TransformerInterface"
-            />
+            <argument type="service" id="Zjk\DtoMapper\Mapping\SingleEntityToDtoMapper" />
+            <argument type="service" id="Zjk\DtoMapper\Mapping\SingleDtoToEntityMapper" />
+            <argument type="service" id="Zjk\DtoMapper\Mapping\CollectionMapper" />
         </service>
 
         <service

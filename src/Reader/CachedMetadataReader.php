@@ -7,11 +7,13 @@ namespace Zjk\DtoMapper\Reader;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Cache\InvalidArgumentException;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
+use Symfony\Contracts\Service\ResetInterface;
 use Zjk\DtoMapper\Contract\MetadataReaderInterface;
 use Zjk\DtoMapper\Metadata\Metadata;
 use Zjk\DtoMapper\Metadata\ReflectionMetadata;
+use Zjk\DtoMapper\Utils\ReflectionUtils;
 
-final readonly class CachedMetadataReader implements MetadataReaderInterface
+final readonly class CachedMetadataReader implements MetadataReaderInterface, ResetInterface
 {
     public function __construct(
         private ReflectionMetadata $reflectionMetadata,
@@ -66,6 +68,16 @@ final readonly class CachedMetadataReader implements MetadataReaderInterface
         \assert($metadata instanceof Metadata);
 
         return $metadata;
+    }
+
+    public function reset(): void
+    {
+        if ($this->cache instanceof ResetInterface) {
+            $this->cache->reset();
+        }
+
+        $this->reflectionMetadata->reset();
+        ReflectionUtils::reset();
     }
 
     /**

@@ -24,7 +24,7 @@ final class SetterStrategy implements PropertyStrategyInterface
         $builder->setSetter($attributeInstance->methodName);
     }
 
-    public function kay(): string
+    public function key(): string
     {
         return Setter::class;
     }

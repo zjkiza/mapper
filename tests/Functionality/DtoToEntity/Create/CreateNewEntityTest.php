@@ -125,7 +125,7 @@ final class CreateNewEntityTest extends KernelTestCase
 
         $this->assertSame($name, $entityExpert->getName());
         $this->assertSame($title, $entityExpert->getTitle());
-        $this->assertIsString($entityExpert->getIdentifier());
+        $this->assertNotEmpty($entityExpert->getIdentifier());
     }
 
     public function testCreateNewEntityWithoutAttributeNewEntityWithAttributeTransformerWhenDefineIdForEntity(): void

@@ -5,6 +5,8 @@ To work with the mapper, it is necessary to inject the `Zjk\DtoMapper\Contract\M
 - `fromObjectDtoToEntity(object $dto, object|string $entity): object`
 - `fromCollectionEntityToDto(iterable $collections, object|string $target): array`
 - `fromCollectionDtoToEntity(iterable $collections, object|string $target): array`
+- `fromCollectionEntityToDtoLazy(iterable $collections, object|string $target): \Generator`
+- `fromCollectionDtoToEntityLazy(iterable $collections, object|string $target): \Generator`
 
 Example:
 ```php

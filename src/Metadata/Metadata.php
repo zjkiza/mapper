@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace Zjk\DtoMapper\Metadata;
 
-final class Metadata
+final readonly class Metadata
 {
     /**
      * @param array<string, Property> $properties
      * @param class-string            $classNameDto
      */
     public function __construct(
-        protected EntityMetadata $entityMetadata,
-        protected string $classNameDto,
-        protected array $properties
+        private EntityMetadata $entityMetadata,
+        private string $classNameDto,
+        private array $properties,
     ) {
     }
 

@@ -23,7 +23,7 @@ final class EntityStrategy implements EntityStrategyInterface
         $builder->setEntity($attributeInstance->name);
     }
 
-    public function kay(): string
+    public function key(): string
     {
         return Entity::class;
     }

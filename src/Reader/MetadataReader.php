@@ -4,19 +4,21 @@ declare(strict_types=1);
 
 namespace Zjk\DtoMapper\Reader;
 
+use Symfony\Contracts\Service\ResetInterface;
 use Zjk\DtoMapper\Contract\MetadataReaderInterface;
 use Zjk\DtoMapper\Metadata\Metadata;
 use Zjk\DtoMapper\Metadata\ReflectionMetadata;
+use Zjk\DtoMapper\Utils\ReflectionUtils;
 
-final class MetadataReader implements MetadataReaderInterface
+final class MetadataReader implements MetadataReaderInterface, ResetInterface
 {
     /**
      * @var array<class-string, Metadata>
      */
-    private static array $cacheDtosMetadata = [];
+    private static array $cache = [];
 
     public function __construct(
-        private readonly ReflectionMetadata $reflectionMetadata
+        private readonly ReflectionMetadata $reflectionMetadata,
     ) {
     }
 
@@ -29,21 +31,22 @@ final class MetadataReader implements MetadataReaderInterface
      */
     public function getMetadata(object|string $dto): Metadata
     {
-        // if not set => create dtosMetadata
-        if ([] === self::$cacheDtosMetadata) {
-            self::$cacheDtosMetadata = $this->reflectionMetadata->getDtosMetadata($dto);
-        }
-
         $dtoClassString = \is_object($dto) ? $dto::class : $dto;
 
-        // Not exist => add dtosMetadata
-        if (!isset(self::$cacheDtosMetadata[$dtoClassString])) {
-            self::$cacheDtosMetadata = [...self::$cacheDtosMetadata, ...$this->reflectionMetadata->getDtosMetadata($dto)];
+        if (!isset(self::$cache[$dtoClassString])) {
+            self::$cache = [...self::$cache, ...$this->reflectionMetadata->getDtosMetadata($dto)];
         }
 
         /** @var Metadata $metadata */
-        $metadata = self::$cacheDtosMetadata[$dtoClassString];
+        $metadata = self::$cache[$dtoClassString];
 
         return $metadata;
+    }
+
+    public function reset(): void
+    {
+        self::$cache = [];
+        $this->reflectionMetadata->reset();
+        ReflectionUtils::reset();
     }
 }

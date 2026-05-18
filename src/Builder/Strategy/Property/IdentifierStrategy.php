@@ -17,7 +17,7 @@ final class IdentifierStrategy implements PropertyStrategyInterface
         $builder->setIdentifier(true);
     }
 
-    public function kay(): string
+    public function key(): string
     {
         return Identifier::class;
     }

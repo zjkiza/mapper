@@ -31,14 +31,14 @@ final class EntityMetadataBuilder
     /**
      * @param class-string $entity
      */
-    public function setEntity(string $entity): EntityMetadataBuilder
+    public function setEntity(string $entity): self
     {
         $this->entity = $entity;
 
         return $this;
     }
 
-    public function setNewEntity(bool $newEntity): EntityMetadataBuilder
+    public function setNewEntity(bool $newEntity): self
     {
         $this->newEntity = $newEntity;
 

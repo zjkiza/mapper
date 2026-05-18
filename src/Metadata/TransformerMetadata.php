@@ -12,7 +12,7 @@ final readonly class TransformerMetadata implements TransformerMetadataFactory
         /**
          * @phpstan-param class-string $actionClass
          */
-        private string $actionClass
+        private string $actionClass,
     ) {
     }
 

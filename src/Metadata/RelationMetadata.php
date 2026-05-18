@@ -12,7 +12,7 @@ final readonly class RelationMetadata
     public function __construct(
         private string $strategy,
         private string $functionName,
-        private string $classNameDto
+        private string $classNameDto,
     ) {
     }
 

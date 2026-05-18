@@ -9,6 +9,8 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension as SymfonyExtension;
 use Zjk\DtoMapper\Contract\DataTransformerInterface;
+use Zjk\DtoMapper\Contract\EntityStrategyInterface;
+use Zjk\DtoMapper\Contract\PropertyStrategyInterface;
 
 /**
  * @psalm-type RowConfiguration = array{
@@ -34,6 +36,14 @@ final class Extension extends SymfonyExtension
         $container
             ->registerForAutoconfiguration(DataTransformerInterface::class)
             ->addTag('zjk_dto_mapper.transformer');
+
+        $container
+            ->registerForAutoconfiguration(PropertyStrategyInterface::class)
+            ->addTag('zjk_dto_mapper.property_strategy');
+
+        $container
+            ->registerForAutoconfiguration(EntityStrategyInterface::class)
+            ->addTag('zjk_dto_mapper.entity_strategy');
 
         if (isset($config['cache_pool'])) {
             $container->setAlias('zjk_dto_mapper.cache_pool', $config['cache_pool']);

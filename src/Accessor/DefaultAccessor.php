@@ -13,7 +13,7 @@ final readonly class DefaultAccessor implements DefaultAccessorInterface
 {
     public function __construct(
         private MethodAccessorInterface $methodAccessor,
-        private PropertyAccessInterface $propertyAccess
+        private PropertyAccessInterface $propertyAccess,
     ) {
     }
 

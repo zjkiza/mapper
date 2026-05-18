@@ -13,7 +13,7 @@ final readonly class Property
         private bool $identifier,
         private ?TransformerMetadata $transformerMetadata = null,
         private ?RelationMetadata $localActionMetadata = null,
-        private ?RepositoryMetadata $repositoryMetadata = null
+        private ?RepositoryMetadata $repositoryMetadata = null,
     ) {
     }
 

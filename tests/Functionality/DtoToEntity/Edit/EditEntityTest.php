@@ -24,7 +24,7 @@ final class EditEntityTest extends KernelTestCase
 
     public function testEditEntityWithTheSamePropertyName(): void
     {
-        $name = 'UPDATE';
+        $name = 'Update';
         $title = 'Doctor 1';
         $id = 'c0b51430-c935-41ee-9877-af39637ab24a';
 
@@ -36,7 +36,7 @@ final class EditEntityTest extends KernelTestCase
         /** @var Expert $entityExpert */
         $entityExpert = $this->mapper->fromObjectDtoToEntity($expertDto, Expert::class);
 
-        $this->assertSame($name, $entityExpert->getName());
+        $this->assertSame('UPDATE', $entityExpert->getName());
         $this->assertSame($title, $entityExpert->getTitle());
         $this->assertSame($id, $entityExpert->getIdentifier());
     }

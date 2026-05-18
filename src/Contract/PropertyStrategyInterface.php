@@ -19,5 +19,5 @@ interface PropertyStrategyInterface
      *
      * @phpstan-return class-string
      */
-    public function kay(): string;
+    public function key(): string;
 }

@@ -16,7 +16,7 @@ final class RepositoryClass implements PropertyAttributeInterface
         public string $entityClassName,
         public string $addMethod,
         public string $removeMethod,
-        public bool $onlyRelation = false
+        public bool $onlyRelation = false,
     ) {
     }
 }

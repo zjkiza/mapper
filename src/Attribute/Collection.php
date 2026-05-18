@@ -14,7 +14,7 @@ final readonly class Collection implements PropertyAttributeInterface, RelationA
      * @phpstan-param  class-string $className
      */
     public function __construct(
-        private string $className
+        private string $className,
     ) {
     }
 

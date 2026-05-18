@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace Zjk\DtoMapper\Builder\Create;
 
+use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
 use Zjk\DtoMapper\Builder\EntityMetadataBuilder;
-use Zjk\DtoMapper\Builder\Strategy\Entity\EntityStrategy;
-use Zjk\DtoMapper\Builder\Strategy\Entity\NewEntityStrategy;
 use Zjk\DtoMapper\Contract\AttributeInterface;
 use Zjk\DtoMapper\Contract\ClassAttributeInterface;
 use Zjk\DtoMapper\Contract\EntityStrategyInterface;
@@ -19,11 +18,16 @@ final class EntityMetadataBuilderCreate
      */
     private array $entityStrategy = [];
 
-    public function __construct()
-    {
-        $this
-            ->addStrategy(new EntityStrategy())
-            ->addStrategy(new NewEntityStrategy());
+    /**
+     * @param iterable<EntityStrategyInterface> $entityStrategies
+     */
+    public function __construct(
+        #[AutowireIterator('zjk_dto_mapper.entity_strategy')]
+        iterable $entityStrategies,
+    ) {
+        foreach ($entityStrategies as $strategy) {
+            $this->entityStrategy[$strategy->key()] = $strategy;
+        }
     }
 
     /**
@@ -38,7 +42,6 @@ final class EntityMetadataBuilderCreate
         foreach ($reflectionClass->getAttributes() as $attribute) {
             $attributeName = $attribute->getName();
 
-            // Make sure we only get ZJK Attributes
             if (!\is_subclass_of($attributeName, ClassAttributeInterface::class)) {
                 continue;
             }
@@ -55,18 +58,11 @@ final class EntityMetadataBuilderCreate
 
     private function strategy(AttributeInterface $attributeInstance, EntityMetadataBuilder $builder): void
     {
-        if (false === \array_key_exists($attributeInstance::class, $this->entityStrategy)) {
+        if (!\array_key_exists($attributeInstance::class, $this->entityStrategy)) {
             return;
         }
 
         $this->entityStrategy[$attributeInstance::class]
             ->build($builder, $attributeInstance);
-    }
-
-    private function addStrategy(EntityStrategyInterface $entityStrategy): self
-    {
-        $this->entityStrategy[$entityStrategy->kay()] = $entityStrategy;
-
-        return $this;
     }
 }

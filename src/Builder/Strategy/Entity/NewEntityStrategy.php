@@ -18,7 +18,7 @@ final class NewEntityStrategy implements EntityStrategyInterface
         $builder->setNewEntity(true);
     }
 
-    public function kay(): string
+    public function key(): string
     {
         return NewEntity::class;
     }

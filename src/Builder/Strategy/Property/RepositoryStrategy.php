@@ -41,7 +41,7 @@ final class RepositoryStrategy implements PropertyStrategyInterface
         );
     }
 
-    public function kay(): string
+    public function key(): string
     {
         return RepositoryClass::class;
     }

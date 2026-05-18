@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Zjk\DtoMapper\Tests\DependencyInjection;
 
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Matthias\SymfonyDependencyInjectionTest\PhpUnit\AbstractExtensionTestCase;
 use Symfony\Component\DependencyInjection\Reference;
@@ -19,11 +18,28 @@ use Zjk\DtoMapper\Contract\MethodAccessorInterface;
 use Zjk\DtoMapper\Contract\PropertyAccessInterface;
 use Zjk\DtoMapper\Contract\TransformerInterface;
 use Zjk\DtoMapper\Mapper;
+use Zjk\DtoMapper\Mapping\CollectionMapper;
+use Zjk\DtoMapper\Mapping\EntityFactory;
+use Zjk\DtoMapper\Mapping\IdentifierResolver;
+use Zjk\DtoMapper\Mapping\RelationResolver;
+use Zjk\DtoMapper\Mapping\SingleDtoToEntityMapper;
+use Zjk\DtoMapper\Mapping\SingleEntityToDtoMapper;
 use Zjk\DtoMapper\Reader\CachedMetadataReader;
 use Zjk\DtoMapper\Transformer\Transformer;
 use Zjk\DtoMapper\Builder\Create\EntityMetadataBuilderCreate;
 use Zjk\DtoMapper\Builder\Create\PropertyBuilderCreate;
+use Zjk\DtoMapper\Builder\Strategy\Entity\EntityStrategy;
+use Zjk\DtoMapper\Builder\Strategy\Entity\NewEntityStrategy;
+use Zjk\DtoMapper\Builder\Strategy\Property\CollectionStrategy;
+use Zjk\DtoMapper\Builder\Strategy\Property\DtoStrategy;
+use Zjk\DtoMapper\Builder\Strategy\Property\GetterStrategy;
+use Zjk\DtoMapper\Builder\Strategy\Property\IdentifierStrategy;
+use Zjk\DtoMapper\Builder\Strategy\Property\RepositoryStrategy;
+use Zjk\DtoMapper\Builder\Strategy\Property\SetterStrategy;
+use Zjk\DtoMapper\Builder\Strategy\Property\TransformerStrategy;
 use Zjk\DtoMapper\Contract\DefaultAccessorInterface;
+use Zjk\DtoMapper\Contract\EntityStrategyInterface;
+use Zjk\DtoMapper\Contract\PropertyStrategyInterface;
 use Zjk\DtoMapper\Contract\RepositoryInterface;
 use Zjk\DtoMapper\DependencyInjection\Extension;
 use Zjk\DtoMapper\Metadata\ReflectionMetadata;
@@ -67,11 +83,23 @@ final class ExtensionTest extends AbstractExtensionTestCase
         $this->assertContainerBuilderHasServiceDefinitionWithArgument(DefaultAccessor::class, 1, new Reference(PropertyAccessInterface::class));
         $this->assertContainerBuilderHasAlias(DefaultAccessorInterface::class, DefaultAccessor::class);
 
-        $this->assertContainerBuilderHasServiceDefinitionWithArgument(Mapper::class, 0, new Reference(EntityManagerInterface::class));
-        $this->assertContainerBuilderHasServiceDefinitionWithArgument(Mapper::class, 1, new Reference(RepositoryInterface::class));
-        $this->assertContainerBuilderHasServiceDefinitionWithArgument(Mapper::class, 2, new Reference(MetadataReaderInterface::class));
-        $this->assertContainerBuilderHasServiceDefinitionWithArgument(Mapper::class, 3, new Reference(DefaultAccessorInterface::class));
-        $this->assertContainerBuilderHasServiceDefinitionWithArgument(Mapper::class, 4, new Reference(TransformerInterface::class));
+        $this->assertContainerBuilderHasService(IdentifierResolver::class, IdentifierResolver::class);
+        $this->assertContainerBuilderHasServiceDefinitionWithArgument(IdentifierResolver::class, 0, new Reference(MetadataReaderInterface::class));
+        $this->assertContainerBuilderHasServiceDefinitionWithArgument(IdentifierResolver::class, 1, new Reference(DefaultAccessorInterface::class));
+        $this->assertContainerBuilderHasServiceDefinitionWithArgument(IdentifierResolver::class, 2, new Reference(TransformerInterface::class));
+
+        $this->assertContainerBuilderHasService(EntityFactory::class, EntityFactory::class);
+        $this->assertContainerBuilderHasServiceDefinitionWithArgument(EntityFactory::class, 0, new Reference(RepositoryInterface::class));
+        $this->assertContainerBuilderHasServiceDefinitionWithArgument(EntityFactory::class, 1, new Reference(MetadataReaderInterface::class));
+
+        $this->assertContainerBuilderHasService(SingleEntityToDtoMapper::class, SingleEntityToDtoMapper::class);
+        $this->assertContainerBuilderHasService(SingleDtoToEntityMapper::class, SingleDtoToEntityMapper::class);
+        $this->assertContainerBuilderHasService(RelationResolver::class, RelationResolver::class);
+        $this->assertContainerBuilderHasService(CollectionMapper::class, CollectionMapper::class);
+
+        $this->assertContainerBuilderHasServiceDefinitionWithArgument(Mapper::class, 0, new Reference(SingleEntityToDtoMapper::class));
+        $this->assertContainerBuilderHasServiceDefinitionWithArgument(Mapper::class, 1, new Reference(SingleDtoToEntityMapper::class));
+        $this->assertContainerBuilderHasServiceDefinitionWithArgument(Mapper::class, 2, new Reference(CollectionMapper::class));
         $this->assertContainerBuilderHasAlias(MapperInterface::class, Mapper::class);
     }
 
@@ -85,6 +113,45 @@ final class ExtensionTest extends AbstractExtensionTestCase
         $this->assertContainerBuilderHasAlias('zjk_dto_mapper.cache_pool', 'cache.adapter.redis');
         $this->assertContainerBuilderHasServiceDefinitionWithArgument(CachedMetadataReader::class, 0, new Reference(ReflectionMetadata::class));
         $this->assertContainerBuilderHasServiceDefinitionWithArgument(CachedMetadataReader::class, 1, new Reference('zjk_dto_mapper.cache_pool'));
+    }
+
+    public function testPropertyStrategiesAreTagged(): void
+    {
+        $this->load();
+
+        $this->assertContainerBuilderHasServiceDefinitionWithTag(CollectionStrategy::class, 'zjk_dto_mapper.property_strategy');
+        $this->assertContainerBuilderHasServiceDefinitionWithTag(DtoStrategy::class, 'zjk_dto_mapper.property_strategy');
+        $this->assertContainerBuilderHasServiceDefinitionWithTag(GetterStrategy::class, 'zjk_dto_mapper.property_strategy');
+        $this->assertContainerBuilderHasServiceDefinitionWithTag(IdentifierStrategy::class, 'zjk_dto_mapper.property_strategy');
+        $this->assertContainerBuilderHasServiceDefinitionWithTag(RepositoryStrategy::class, 'zjk_dto_mapper.property_strategy');
+        $this->assertContainerBuilderHasServiceDefinitionWithTag(SetterStrategy::class, 'zjk_dto_mapper.property_strategy');
+        $this->assertContainerBuilderHasServiceDefinitionWithTag(TransformerStrategy::class, 'zjk_dto_mapper.property_strategy');
+    }
+
+    public function testEntityStrategiesAreTagged(): void
+    {
+        $this->load();
+
+        $this->assertContainerBuilderHasServiceDefinitionWithTag(EntityStrategy::class, 'zjk_dto_mapper.entity_strategy');
+        $this->assertContainerBuilderHasServiceDefinitionWithTag(NewEntityStrategy::class, 'zjk_dto_mapper.entity_strategy');
+    }
+
+    public function testPropertyStrategyAutoconfiguration(): void
+    {
+        $this->load();
+
+        $autoconfigured = $this->container->getAutoconfiguredInstanceof();
+        $this->assertArrayHasKey(PropertyStrategyInterface::class, $autoconfigured);
+        $this->assertTrue($autoconfigured[PropertyStrategyInterface::class]->hasTag('zjk_dto_mapper.property_strategy'));
+    }
+
+    public function testEntityStrategyAutoconfiguration(): void
+    {
+        $this->load();
+
+        $autoconfigured = $this->container->getAutoconfiguredInstanceof();
+        $this->assertArrayHasKey(EntityStrategyInterface::class, $autoconfigured);
+        $this->assertTrue($autoconfigured[EntityStrategyInterface::class]->hasTag('zjk_dto_mapper.entity_strategy'));
     }
 
     protected function getContainerExtensions(): array

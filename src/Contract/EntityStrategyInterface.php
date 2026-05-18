@@ -18,5 +18,5 @@ interface EntityStrategyInterface
      *
      * @return class-string
      */
-    public function kay(): string;
+    public function key(): string;
 }

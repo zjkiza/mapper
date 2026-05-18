@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.8.0]
+
+### Fixed
+- Typo error.
+- Remove duplicate code for doctrine proxy initializer.
+- N+1 query risk. Add batch lookup mechanism.
+- Optimize add, remove and edit for relation.
+- Fix Memory Leak Risk.
+- Replace hardcoded strategies with tagges services.
+- Class Mapper separation of logic into composite services.
+
+### Added
+- Add fromCollectionEntityToDtoLazy for lazy loading of relations.
+- Add fromCollectionDtoToEntityLazy for lazy loading of relations.
+
 ## [0.7.7]
 
 ### Fixed

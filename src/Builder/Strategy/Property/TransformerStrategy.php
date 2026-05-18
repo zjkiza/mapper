@@ -22,7 +22,7 @@ final class TransformerStrategy implements PropertyStrategyInterface
         );
     }
 
-    public function kay(): string
+    public function key(): string
     {
         return Transformer::class;
     }

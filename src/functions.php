@@ -10,7 +10,7 @@ namespace Zjk\DtoMapper;
  */
 function checkIsAllValuesInArraySameType(
     array $inputCollections,
-    string $type
+    string $type,
 ): void {
     $isAllValueInArraySameType = static fn (array $inputCollection): bool => !(bool) \array_filter($inputCollection, static fn ($value): bool => \gettype($value) !== $type);
 

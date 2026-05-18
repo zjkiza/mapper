@@ -24,7 +24,7 @@ final class GetterStrategy implements PropertyStrategyInterface
         $builder->setGetter($attributeInstance->methodName);
     }
 
-    public function kay(): string
+    public function key(): string
     {
         return Getter::class;
     }

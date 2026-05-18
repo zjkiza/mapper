@@ -28,7 +28,6 @@ final class ReflectionUtils
 
         if ($reflectionClass->hasProperty($property) && !$reflectionClass->getProperty($property)->isStatic()) {
             $reflectionProperty = $reflectionClass->getProperty($property);
-            $reflectionProperty->setAccessible(true);
 
             self::$cache[$key] = $reflectionProperty;
 
@@ -62,7 +61,6 @@ final class ReflectionUtils
 
         if ($reflectionClass->hasMethod($method) && !$reflectionClass->getMethod($method)->isStatic()) {
             $reflectionMethod = $reflectionClass->getMethod($method);
-            $reflectionMethod->setAccessible(true);
 
             self::$cache[$key] = $reflectionMethod;
 
@@ -80,5 +78,10 @@ final class ReflectionUtils
         }
 
         throw new InvalidMethodException(\sprintf('Method "%s" of the class "%s" does not exist.', $method, $reflectionClass->getName()));
+    }
+
+    public static function reset(): void
+    {
+        self::$cache = [];
     }
 }
