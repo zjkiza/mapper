@@ -13,7 +13,7 @@ use Zjk\DtoMapper\Tests\Resources\App\Entities\Media;
 use Zjk\DtoMapper\Transformer\UpperTransformer;
 
 #[Entity(name: Media::class)]
-class MediaResponseDto
+final class MediaResponseDto
 {
     #[Getter(methodName: 'getIdentifier')]
     public ?string $id = null;

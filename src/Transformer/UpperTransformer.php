@@ -9,6 +9,7 @@ use Zjk\DtoMapper\Exception\TransformationFailedException;
 
 final class UpperTransformer implements DataTransformerInterface
 {
+    #[\Override]
     public function transform(mixed $value): ?string
     {
         if (null === $value) {
@@ -22,6 +23,7 @@ final class UpperTransformer implements DataTransformerInterface
         throw TransformationFailedException::transform($value, $this);
     }
 
+    #[\Override]
     public function reverse(mixed $value): ?string
     {
         if (null === $value) {

@@ -13,6 +13,7 @@ use Zjk\DtoMapper\Metadata\RelationMetadata;
 
 final class CollectionStrategy implements PropertyStrategyInterface
 {
+    #[\Override]
     public function build(PropertyBuilder $builder, AttributeInterface $attributeInstance, EntityMetadata $entityMetadata): void
     {
         \assert($attributeInstance instanceof Collection);
@@ -22,6 +23,7 @@ final class CollectionStrategy implements PropertyStrategyInterface
         );
     }
 
+    #[\Override]
     public function key(): string
     {
         return Collection::class;

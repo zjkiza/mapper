@@ -12,11 +12,13 @@ use Zjk\DtoMapper\Metadata\EntityMetadata;
 
 final class IdentifierStrategy implements PropertyStrategyInterface
 {
+    #[\Override]
     public function build(PropertyBuilder $builder, AttributeInterface $attributeInstance, EntityMetadata $entityMetadata): void
     {
         $builder->setIdentifier(true);
     }
 
+    #[\Override]
     public function key(): string
     {
         return Identifier::class;

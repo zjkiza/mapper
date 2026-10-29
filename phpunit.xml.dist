@@ -1,23 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd"
+        xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/13.4/phpunit.xsd"
         backupGlobals="false"
         colors="true"
         bootstrap="phpunit.bootstrap.php"
+        cacheDirectory=".phpunit.cache"
+        displayDetailsOnTestsThatTriggerDeprecations="true"
+        failOnDeprecation="true"
+        failOnWarning="true"
+        failOnRisky="true"
 >
-  <coverage>
+  <source ignoreSuppressionOfDeprecations="true" ignoreIndirectDeprecations="true">
     <include>
       <directory>./src</directory>
     </include>
-  </coverage>
+  </source>
   <php>
     <ini name="display_errors" value="1"/>
     <ini name="error_reporting" value="-1"/>
     <ini name="intl.default_locale" value="en"/>
     <ini name="intl.error_level" value="0"/>
     <ini name="memory_limit" value="-1"/>
-    <env name="SYMFONY_DEPRECATIONS_HELPER" value="weak" />
   </php>
   <testsuites>
     <testsuite name="Test suite">
@@ -25,6 +29,7 @@
     </testsuite>
   </testsuites>
   <extensions>
-    <extension class="DAMA\DoctrineTestBundle\PHPUnit\PHPUnitExtension"/>
+    <bootstrap class="DAMA\DoctrineTestBundle\PHPUnit\PHPUnitExtension"/>
+    <bootstrap class="Symfony\Bridge\PhpUnit\SymfonyExtension"/>
   </extensions>
 </phpunit>

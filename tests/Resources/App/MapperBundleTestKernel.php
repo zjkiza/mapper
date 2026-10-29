@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Zjk\DtoMapper\Tests\Resources\App;
 
+use Composer\InstalledVersions;
+use Composer\Semver\VersionParser;
 use DAMA\DoctrineTestBundle\DAMADoctrineTestBundle;
 use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
 use Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle;
@@ -43,23 +45,35 @@ final class MapperBundleTestKernel extends Kernel
             'test'          => true,
             'property_info' => [
                 'enabled' => true,
+                // Symfony 8.0 default; the option exists since framework-bundle 7.3.
+                ...(self::VERSION_ID >= 70300 ? ['with_constructor_extractor' => true] : []),
             ],
         ]);
+        $isDoctrineBundle2 = InstalledVersions::satisfies(new VersionParser(), 'doctrine/doctrine-bundle', '<3.0');
+
+        // Removed in doctrine-bundle 3, where lazy ghost objects and declared fields reporting are always enabled.
+        $legacyOrmOptions = $isDoctrineBundle2 ? [
+            'auto_generate_proxy_classes'  => true,
+            // Lazy ghost objects require doctrine/persistence 3.1 or higher.
+            ...(InstalledVersions::satisfies(new VersionParser(), 'doctrine/persistence', '>=3.1') ? ['enable_lazy_ghost_objects' => true] : []),
+            'report_fields_where_declared' => true,
+        ] : [];
+
         $container->extension('doctrine', [
             'dbal' => [
                 'driver' => 'pdo_mysql',
                 'url'    => 'mysql://developer:developer@mysql_bundle_1/developer',
-                'use_savepoints' => true,
+                'server_version' => '8.0.32',
+                // Removed in doctrine-bundle 3 (DBAL 4), where savepoints are always enabled.
+                ...($isDoctrineBundle2 ? ['use_savepoints' => true] : []),
                 'types' => [
                     'uuid' => UuidType::class,
                 ],
             ],
             'orm'  => [
-                'auto_generate_proxy_classes' => true,
+                ...$legacyOrmOptions,
                 'naming_strategy'             => 'doctrine.orm.naming_strategy.underscore_number_aware',
                 'auto_mapping'                => true,
-                'enable_lazy_ghost_objects'   => true,
-                'report_fields_where_declared' => true,
                 'mappings'                    => [
                     'Tests' => [
                         'is_bundle' => false,

@@ -25,7 +25,6 @@ final readonly class SingleEntityToDtoMapper
             /** @var class-string $dtoClass */
             $dtoClass = $dto;
             $reflectionDto = new \ReflectionClass($dtoClass);
-            /** @var object $dto */
             $dto = $reflectionDto->newInstance();
         }
 

@@ -18,6 +18,7 @@ final readonly class Mapper implements MapperInterface
     ) {
     }
 
+    #[\Override]
     public function fromCollectionEntityToDto(iterable $collections, object|string $target): array
     {
         return $this->collectionMapper->entityToDto($collections, $target);
@@ -28,6 +29,7 @@ final readonly class Mapper implements MapperInterface
      *
      * @return \Generator<int, object, mixed, void>
      */
+    #[\Override]
     public function fromCollectionEntityToDtoLazy(iterable $collections, object|string $target): \Generator
     {
         return $this->collectionMapper->entityToDtoLazy($collections, $target);
@@ -40,9 +42,8 @@ final readonly class Mapper implements MapperInterface
      * @param T|class-string<T>            $target
      *
      * @return array<int, T>
-     *
-     * @psalm-suppress MoreSpecificImplementedParamType
      */
+    #[\Override]
     public function fromCollectionDtoToEntity(iterable $collections, object|string $target): array
     {
         return $this->collectionMapper->dtoToEntity($collections, $target);
@@ -55,14 +56,14 @@ final readonly class Mapper implements MapperInterface
      * @param T|class-string<T>            $target
      *
      * @return \Generator<int, T, mixed, void>
-     *
-     * @psalm-suppress MoreSpecificImplementedParamType
      */
+    #[\Override]
     public function fromCollectionDtoToEntityLazy(iterable $collections, object|string $target): \Generator
     {
         return $this->collectionMapper->dtoToEntityLazy($collections, $target);
     }
 
+    #[\Override]
     public function fromObjectEntityToDto(object $entity, object|string $dto): object
     {
         return $this->entityToDtoMapper->map($entity, $dto);
@@ -74,6 +75,7 @@ final readonly class Mapper implements MapperInterface
      * @param T|class-string<T>          $entity
      * @param array<string, object>|null $entityLookupMap
      */
+    #[\Override]
     public function fromObjectDtoToEntity(object $dto, object|string $entity, ?array $entityLookupMap = null): object
     {
         return $this->dtoToEntityMapper->map($dto, $entity, $entityLookupMap);

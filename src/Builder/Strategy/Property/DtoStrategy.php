@@ -13,6 +13,7 @@ use Zjk\DtoMapper\Metadata\RelationMetadata;
 
 final class DtoStrategy implements PropertyStrategyInterface
 {
+    #[\Override]
     public function build(PropertyBuilder $builder, AttributeInterface $attributeInstance, EntityMetadata $entityMetadata): void
     {
         \assert($attributeInstance instanceof Dto);
@@ -22,6 +23,7 @@ final class DtoStrategy implements PropertyStrategyInterface
         );
     }
 
+    #[\Override]
     public function key(): string
     {
         return Dto::class;

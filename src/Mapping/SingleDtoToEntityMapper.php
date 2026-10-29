@@ -4,19 +4,14 @@ declare(strict_types=1);
 
 namespace Zjk\DtoMapper\Mapping;
 
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Zjk\DtoMapper\Attribute\Dto;
 use Zjk\DtoMapper\Contract\DefaultAccessorInterface;
-use Zjk\DtoMapper\Contract\IdentifierInterface;
 use Zjk\DtoMapper\Contract\MetadataReaderInterface;
 use Zjk\DtoMapper\Contract\TransformerInterface;
-use Zjk\DtoMapper\Exception\NotExistAttribute;
 use Zjk\DtoMapper\Metadata\DtoIdentifier;
+use Zjk\DtoMapper\Metadata\Metadata;
 use Zjk\DtoMapper\Metadata\Property;
-use Zjk\DtoMapper\Metadata\RepositoryMetadata;
-
-use function Zjk\DtoMapper\checkIsAllValuesInArraySameType;
 
 final readonly class SingleDtoToEntityMapper
 {
@@ -26,8 +21,8 @@ final readonly class SingleDtoToEntityMapper
         private DefaultAccessorInterface $defaultAccessor,
         private TransformerInterface $transformer,
         private EntityFactory $entityFactory,
-        private RelationResolver $relationResolver,
         private IdentifierResolver $identifierResolver,
+        private RepositoryRelationMapper $repositoryRelationMapper,
     ) {
     }
 
@@ -42,9 +37,7 @@ final readonly class SingleDtoToEntityMapper
         $dtoIdentifier = $this->identifierResolver->resolve($dto);
 
         if (!\is_object($entity)) {
-            $entity = ($metadata->getEntityMetadata()->isNewEntity())
-                ? $this->entityFactory->create($dtoIdentifier, $entity)
-                : $this->entityFactory->findOrCreate($dto, $entity, $metadata, $dtoIdentifier, $entityLookupMap);
+            $entity = $this->resolveEntity($dto, $entity, $metadata, $dtoIdentifier, $entityLookupMap);
         }
 
         foreach ($metadata->getProperties() as $property) {
@@ -52,29 +45,7 @@ final readonly class SingleDtoToEntityMapper
                 continue;
             }
 
-            if (true === $property->hasTransformerMetadata()) {
-                $value = $this->transformer->reverse($dto, $property);
-                $this->defaultAccessor->callSetter($entity, $property, $value);
-                continue;
-            }
-
-            if (true === $property->hasRepositoryMetadata()) {
-                $this->resolveRepositoryRelation($entity, $property, $dto);
-                continue;
-            }
-
-            if (Dto::class === $property->getLocalActionMetadata()?->getStrategy()) {
-                /** @var object $objectDto */
-                $objectDto = $this->defaultAccessor->getValue($dto, $property);
-                $entityFromDto = $this->entityFactory->getEntityFromRelationAttribute($property);
-
-                $embeddedEntity = $this->map($objectDto, $entityFromDto);
-                $this->defaultAccessor->callSetter($entity, $property, $embeddedEntity);
-                continue;
-            }
-
-            $value = $this->defaultAccessor->getValue($dto, $property);
-            $this->defaultAccessor->callSetter($entity, $property, $value);
+            $this->mapProperty($dto, $entity, $property);
         }
 
         $this->entityManager->persist($entity);
@@ -91,171 +62,55 @@ final readonly class SingleDtoToEntityMapper
     }
 
     /**
-     * @throws NotExistAttribute
+     * @param class-string               $entityClassName
+     * @param array<string, object>|null $entityLookupMap
      */
-    private function resolveRepositoryRelation(object $entity, Property $property, object $dto): void
+    private function resolveEntity(object $dto, string $entityClassName, Metadata $metadata, DtoIdentifier $dtoIdentifier, ?array $entityLookupMap): object
     {
-        $localAction = $property->getLocalActionMetadata();
-        if (!$localAction instanceof \Zjk\DtoMapper\Metadata\RelationMetadata) {
-            throw new NotExistAttribute('Attribute Collection is must by define when used attribute Repository.');
+        if ($metadata->getEntityMetadata()->isNewEntity()) {
+            return $this->entityFactory->create($dtoIdentifier, $entityClassName);
         }
 
-        /** @var RepositoryMetadata $repositoryMetadata */
-        $repositoryMetadata = $property->getRepositoryMetadata();
+        return $this->entityFactory->findOrCreate($dto, $entityClassName, $metadata, $dtoIdentifier, $entityLookupMap);
+    }
 
-        /** @var array<array{}|object> $inputCollections */
-        $inputCollections = $this->defaultAccessor->getValue($dto, $property);
-
-        if (false === (bool) $inputCollections) {
-            $this->defaultAccessor->setValue($entity, $property, new ArrayCollection());
+    private function mapProperty(object $dto, object $entity, Property $property): void
+    {
+        if ($property->hasTransformerMetadata()) {
+            $value = $this->transformer->reverse($dto, $property);
+            $this->defaultAccessor->callSetter($entity, $property, $value);
 
             return;
         }
 
-        checkIsAllValuesInArraySameType($inputCollections, 'object');
-
-        /** @var array<object> $inputCollections */
-        $newCollection = $this->resolveNewCollection($repositoryMetadata, $inputCollections, $dto);
-
-        if (false === (bool) $newCollection) {
-            $this->defaultAccessor->setValue($entity, $property, new ArrayCollection());
-
-            return;
-        }
-
-        $previousCollection = $this->getPreviousCollection($entity, $property);
-
-        $this->relationResolver->syncCollection($entity, $repositoryMetadata, $newCollection, $previousCollection);
-    }
-
-    /**
-     * @param object[] $inputCollections
-     *
-     * @return array<int|string, object>
-     */
-    private function resolveNewCollection(RepositoryMetadata $repositoryMetadata, array $inputCollections, object $dto): array
-    {
-        if ($repositoryMetadata->isOnlyRelation()) {
-            /** @var array<int|string, object> $newCollection */
-            $newCollection = $this->relationResolver->buildRelationCollection($repositoryMetadata, $inputCollections, $dto);
-
-            return $newCollection;
-        }
-
-        /** @var array<int|string, object> $newCollection */
-        $newCollection = $this->buildFullCollection($repositoryMetadata, $inputCollections);
-
-        return $newCollection;
-    }
-
-    /**
-     * @template T of object
-     *
-     * @param iterable<T> $inputCollections
-     *
-     * @return array<string|int, T>
-     *
-     * @throws NotExistAttribute
-     * @throws \ReflectionException
-     */
-    private function buildFullCollection(RepositoryMetadata $repositoryMetadata, iterable $inputCollections): array
-    {
-        /** @var class-string $entityClass */
-        $entityClass = $repositoryMetadata->getClassName();
-
-        /**
-         * @template T of object
-         *
-         * @var array<string|int, T> $newCollection
-         */
-        $newCollection = [];
-        /**
-         * @var array<int|string> $inputIdsFromRepository
-         */
-        $inputIdsFromRepository = [];
-        /**
-         * @var array<int|string, object> $dtoForEntity
-         */
-        $dtoForEntity = [];
-        /**
-         * @var array<int|string, DtoIdentifier> $dtoIdentifiers
-         */
-        $dtoIdentifiers = [];
-
-        foreach ($inputCollections as $dto) {
-            $dtoIdentifier = $this->identifierResolver->resolve($dto);
-
-            $idValue = $dtoIdentifier->getValue();
-            if (null === $idValue) {
-                /** @var IdentifierInterface $entity */
-                $entity = new $entityClass();
-
-                $newCollection[$entity->getIdentifier()] = $this->map($dto, $entity);
-                continue;
-            }
-
-            /** @var int|string $idValue */
-            $inputIdsFromRepository[] = $idValue;
-            $dtoForEntity[$idValue] = $dto;
-            $dtoIdentifiers[$idValue] = $dtoIdentifier;
-        }
-
-        /**
-         * @var IdentifierInterface[] $entityFromRepository
-         */
-        $entityFromRepository = $this->entityFactory->getRepository()->findAllByIdentifiers($inputIdsFromRepository, $entityClass);
-
-        if (\iterator_count($entityFromRepository) !== \count($inputIdsFromRepository)) {
-            $existIdRepository = \array_map(
-                static fn (IdentifierInterface $identifier): int|string => $identifier->getIdentifier(),
-                \iterator_to_array($entityFromRepository)
+        if ($property->hasRepositoryMetadata()) {
+            $this->repositoryRelationMapper->map(
+                $entity,
+                $property,
+                $dto,
+                fn (object $dto, object $entity): object => $this->map($dto, $entity)
             );
 
-            /** @var array<int|string> $addNewEntityWithDefinedId */
-            $addNewEntityWithDefinedId = \array_diff($inputIdsFromRepository, $existIdRepository);
-
-            foreach ($addNewEntityWithDefinedId as $id) {
-                $entity = $this->createEntity($dtoIdentifiers[$id], $entityClass);
-                $newCollection[$id] = $this->map($dtoForEntity[$id], $entity);
-                unset($dtoForEntity[$id]);
-            }
+            return;
         }
 
-        foreach ($entityFromRepository as $entity) {
-            $entityId = $entity->getIdentifier();
-            $newCollection[$entityId] = $this->map($dtoForEntity[$entityId], $entity);
+        if (Dto::class === $property->getLocalActionMetadata()?->getStrategy()) {
+            $this->mapEmbedded($dto, $entity, $property);
+
+            return;
         }
 
-        /**
-         * @template T of object
-         *
-         * @var array<string|int, T> $newCollection
-         */
-        return $newCollection;
+        $value = $this->defaultAccessor->getValue($dto, $property);
+        $this->defaultAccessor->callSetter($entity, $property, $value);
     }
 
-    /**
-     * @return array<int|string, object>
-     */
-    private function getPreviousCollection(object $entity, Property $property): array
+    private function mapEmbedded(object $dto, object $entity, Property $property): void
     {
-        /**
-         * @psalm-var ArrayCollection<int, object> $arrayCollection
-         */
-        $arrayCollection = $this->defaultAccessor->callGetter($entity, $property);
+        /** @var object $objectDto */
+        $objectDto = $this->defaultAccessor->getValue($dto, $property);
+        $entityFromDto = $this->entityFactory->getEntityFromRelationAttribute($property);
 
-        /** @var IdentifierInterface[] $previousArrayFromDatabase */
-        $previousArrayFromDatabase = $arrayCollection->toArray();
-
-        if (false === (bool) $previousArrayFromDatabase) {
-            return [];
-        }
-
-        $previousCollectionIds = \array_map(
-            static fn (IdentifierInterface $entity): int|string => $entity->getIdentifier(),
-            $previousArrayFromDatabase
-        );
-
-        return \array_combine($previousCollectionIds, $previousArrayFromDatabase);
+        $embeddedEntity = $this->map($objectDto, $entityFromDto);
+        $this->defaultAccessor->callSetter($entity, $property, $embeddedEntity);
     }
 }

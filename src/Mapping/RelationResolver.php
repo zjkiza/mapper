@@ -69,23 +69,37 @@ final readonly class RelationResolver
 
         foreach ($newCollection as $key => $newEntity) {
             if (isset($previousKeys[$key])) {
-                $entity->{$metadata->getRemoveMethod()}($previousCollection[$key]);
+                $this->callMethod($entity, $metadata->getRemoveMethod(), $previousCollection[$key]);
             }
 
-            $entity->{$metadata->getAddMethod()}($newEntity);
+            $this->callMethod($entity, $metadata->getAddMethod(), $newEntity);
         }
 
         foreach ($previousCollection as $key => $prevEntity) {
             if (!isset($newKeys[$key])) {
-                $entity->{$metadata->getRemoveMethod()}($prevEntity);
+                $this->callMethod($entity, $metadata->getRemoveMethod(), $prevEntity);
             }
         }
     }
 
     /**
+     * @throws RuntimeException
+     */
+    private function callMethod(object $entity, string $method, object $argument): void
+    {
+        $callable = [$entity, $method];
+
+        if (!\is_callable($callable)) {
+            throw new RuntimeException(\sprintf('Method "%s::%s()" does not exist or is not public.', $entity::class, $method));
+        }
+
+        $callable($argument);
+    }
+
+    /**
      * @return array<int|string, object>
      */
-    private function getPreviousCollection(object $entity, Property $property): array
+    public function getPreviousCollection(object $entity, Property $property): array
     {
         /**
          * @psalm-var ArrayCollection<int, object> $arrayCollection
@@ -124,7 +138,7 @@ final readonly class RelationResolver
 
         $inputArray = iterable_to_array($inputCollections);
 
-        /** @var object|false $first */
+        /** @var T|false $first */
         $first = \reset($inputArray);
 
         if (false === $first) {

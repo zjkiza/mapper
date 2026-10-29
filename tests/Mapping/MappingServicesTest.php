@@ -30,6 +30,7 @@ final class MappingServicesTest extends KernelTestCase
 
     private IdentifierResolver $identifierResolver;
 
+    #[\Override]
     protected function setUp(): void
     {
         parent::setUp();
@@ -42,6 +43,7 @@ final class MappingServicesTest extends KernelTestCase
         $this->identifierResolver = $this->getContainer()->get(IdentifierResolver::class);
     }
 
+    #[\Override]
     protected function tearDown(): void
     {
         parent::tearDown();

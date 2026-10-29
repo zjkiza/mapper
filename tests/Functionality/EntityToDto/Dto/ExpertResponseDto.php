@@ -11,7 +11,7 @@ use Zjk\DtoMapper\Tests\Resources\App\Entities\Expert;
 use Zjk\DtoMapper\Transformer\UpperTransformer;
 
 #[Entity(name: Expert::class)]
-class ExpertResponseDto
+final class ExpertResponseDto
 {
     #[Getter(methodName: 'getIdentifier')]
     public ?string $id = null;

@@ -11,7 +11,7 @@ use Zjk\DtoMapper\Tests\Resources\App\Entities\Expert;
 use Zjk\DtoMapper\Transformer\UuidTransformer;
 
 #[Entity(name: Expert::class)]
-class ExpertResponseGetDto
+final class ExpertResponseGetDto
 {
     #[Transformer(name: UuidTransformer::class)]
     public ?string $id = null;

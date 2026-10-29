@@ -16,6 +16,7 @@ final readonly class TransformerMetadata implements TransformerMetadataFactory
     ) {
     }
 
+    #[\Override]
     public function actionName(): string
     {
         return $this->actionClass;

@@ -11,6 +11,7 @@ use Zjk\DtoMapper\Contract\EntityStrategyInterface;
 
 final class NewEntityStrategy implements EntityStrategyInterface
 {
+    #[\Override]
     public function build(EntityMetadataBuilder $builder, AttributeInterface $attributeInstance): void
     {
         \assert($attributeInstance instanceof NewEntity);
@@ -18,6 +19,7 @@ final class NewEntityStrategy implements EntityStrategyInterface
         $builder->setNewEntity(true);
     }
 
+    #[\Override]
     public function key(): string
     {
         return NewEntity::class;

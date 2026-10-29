@@ -16,6 +16,7 @@ final readonly class DoctrineProxyPropertyAccessor implements PropertyAccessInte
     ) {
     }
 
+    #[\Override]
     public function getValue(object $object, Property $property): mixed
     {
         $this->proxyInitializer->initializeIfProxy($object);
@@ -23,6 +24,7 @@ final readonly class DoctrineProxyPropertyAccessor implements PropertyAccessInte
         return $this->propertyAccess->getValue($object, $property);
     }
 
+    #[\Override]
     public function setValue(object $object, Property $property, mixed $value): void
     {
         $this->proxyInitializer->initializeIfProxy($object);

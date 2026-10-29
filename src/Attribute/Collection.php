@@ -18,6 +18,7 @@ final readonly class Collection implements PropertyAttributeInterface, RelationA
     ) {
     }
 
+    #[\Override]
     public function getClassNameDto(): string
     {
         return $this->className;

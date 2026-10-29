@@ -15,6 +15,7 @@ final readonly class DoctrineRepositoryRegistry implements RepositoryInterface
     {
     }
 
+    #[\Override]
     public function findByIdentifier(mixed $identifier, string $entity): ?object
     {
         return $this->doctrine
@@ -22,6 +23,7 @@ final readonly class DoctrineRepositoryRegistry implements RepositoryInterface
             ->findOneBy(['id' => $identifier]);
     }
 
+    #[\Override]
     public function findAllByIdentifiers(iterable $identifiers, string $entity): iterable
     {
         $identifiers = iterable_to_array($identifiers);

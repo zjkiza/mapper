@@ -17,21 +17,25 @@ final readonly class DefaultAccessor implements DefaultAccessorInterface
     ) {
     }
 
+    #[\Override]
     public function callGetter(object $object, Property $property): mixed
     {
         return $this->methodAccessor->callGetter($object, $property);
     }
 
+    #[\Override]
     public function callSetter(object $object, Property $property, mixed $value): void
     {
         $this->methodAccessor->callSetter($object, $property, $value);
     }
 
+    #[\Override]
     public function getValue(object $object, Property $property): mixed
     {
         return $this->propertyAccess->getValue($object, $property);
     }
 
+    #[\Override]
     public function setValue(object $object, Property $property, mixed $value): void
     {
         $this->propertyAccess->setValue($object, $property, $value);

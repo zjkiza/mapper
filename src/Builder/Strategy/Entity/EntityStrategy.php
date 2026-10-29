@@ -12,6 +12,7 @@ use Zjk\DtoMapper\Exception\InvalidClassException;
 
 final class EntityStrategy implements EntityStrategyInterface
 {
+    #[\Override]
     public function build(EntityMetadataBuilder $builder, AttributeInterface $attributeInstance): void
     {
         \assert($attributeInstance instanceof Entity);
@@ -23,6 +24,7 @@ final class EntityStrategy implements EntityStrategyInterface
         $builder->setEntity($attributeInstance->name);
     }
 
+    #[\Override]
     public function key(): string
     {
         return Entity::class;

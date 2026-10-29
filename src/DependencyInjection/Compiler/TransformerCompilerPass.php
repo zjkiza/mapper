@@ -11,6 +11,7 @@ use Zjk\DtoMapper\Transformer\Transformer;
 
 final class TransformerCompilerPass implements CompilerPassInterface
 {
+    #[\Override]
     public function process(ContainerBuilder $container): void
     {
         if (!$container->hasDefinition(Transformer::class)) {

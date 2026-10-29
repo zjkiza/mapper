@@ -16,6 +16,7 @@ final readonly class DoctrineProxyMethodAccessor implements MethodAccessorInterf
     ) {
     }
 
+    #[\Override]
     public function callGetter(object $object, Property $property): mixed
     {
         $this->proxyInitializer->initializeIfProxy($object);
@@ -23,6 +24,7 @@ final readonly class DoctrineProxyMethodAccessor implements MethodAccessorInterf
         return $this->methodAccess->callGetter($object, $property);
     }
 
+    #[\Override]
     public function callSetter(object $object, Property $property, mixed $value): void
     {
         $this->proxyInitializer->initializeIfProxy($object);

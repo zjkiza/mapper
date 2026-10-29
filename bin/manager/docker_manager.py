@@ -3,7 +3,7 @@ from typing import final, List, Optional
 from dotenv import dotenv_values
 from rich.console import Console
 from rich.markdown import Markdown
-from bin.config.config import container_db, docker_compose_files_list, containers, phpunit_code_error_bypass, ping_db
+from bin.config.config import container_db, docker_compose_files_list, containers, phpunit_code_error_bypass
 import re
 import os
 import time
@@ -18,8 +18,9 @@ class DockerManager(BaseModel):
     docker_compose_files_list: List[str]
     containers: List[str]
     container_db: Optional[str] = None
-    ping_db: Optional[str] = None
     waiting_db_connection: bool = False
+    database_timeout: int = 120
+    database_poll_interval: int = 2
     phpunit_code_error_bypass: bool = False
     console: Console = Field(default_factory=Console)
     working_directory: str = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
@@ -39,7 +40,6 @@ class DockerManager(BaseModel):
             docker_compose_files_list=docker_compose_files_list,
             containers=containers,
             container_db=container_db,
-            ping_db=ping_db,
             phpunit_code_error_bypass=phpunit_code_error_bypass
         )
 
@@ -49,13 +49,10 @@ class DockerManager(BaseModel):
 
         self.console.print(Markdown('# Running docker containers ...'), width=120, style="green")
 
-        result = subprocess.run(
-            f'docker-compose -f {self.docker_compose_files} up -d --build {"> /dev/null" if not self.verbose else ""}',
-            shell=True,
-            stdout=subprocess.PIPE
-        )
+        result = self.run_docker_compose('--progress plain up -d --build')
 
         if result.returncode != 0:
+            self.print_compose_output(result)
             self.console.print(f'[bold red]ERROR container "{self.docker_compose_files}" failed to start![/bold red]')
             exit(1)
 
@@ -65,19 +62,30 @@ class DockerManager(BaseModel):
             self.waiting_database_connection()
 
     def down_container(self) -> None:
-        result = subprocess.run(
-            f'docker-compose -f {self.docker_compose_files} down {"> /dev/null" if not self.verbose else ""}',
-            shell=True,
-            stdout=subprocess.PIPE
-        )
+        result = self.run_docker_compose('down')
 
         if result.returncode != 0:
+            self.print_compose_output(result)
             self.console.print(f'[bold red]ERROR container "{self.docker_compose_files}" failed to down![/bold red]')
             exit(1)
 
         self.console.print(Markdown('***'), width=120)
         self.console.print(Markdown('### Tearing down docker containers.'), width=120, style="green")
         self.console.print(Markdown('***'), width=120)
+
+    def run_docker_compose(self, arguments: str) -> subprocess.CompletedProcess:
+        command = f'docker compose -f {self.docker_compose_files} {arguments}'
+
+        if self.verbose:
+            # The output goes straight to the terminal, so it is displayed live.
+            return subprocess.run(command, shell=True)
+
+        return subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+
+    def print_compose_output(self, result: subprocess.CompletedProcess) -> None:
+        # In verbose mode the output has already been displayed, nothing is captured.
+        if result.stdout:
+            self.console.print(result.stdout, markup=False, highlight=False)
 
     def process_test_result(self, output_process: subprocess.CompletedProcess, command_name: str,
                             result_of_tests: int) -> int:
@@ -111,21 +119,28 @@ class DockerManager(BaseModel):
     def waiting_database_connection(self) -> None:
         self.console.print(f'[yellow]Waiting for the database "{self.container_db}" to be ready......[/yellow]')
 
-        for i in range(3):
-            try:
-                subprocess.run(
-                    f'docker exec {self.container_db} sh -c "{self.ping_db}"',
-                    shell=True,
-                    check=True
-                )
+        deadline = time.monotonic() + self.database_timeout
+        while time.monotonic() < deadline:
+            if self.__database_health_status() == 'healthy':
                 self.console.print('[yellow]The database is ready![/yellow]')
-                break
-            except subprocess.CalledProcessError:
-                self.console.print(f"Attempt {i + 1}: The database is not ready yet...")
-                time.sleep(30)
-        else:
-            self.console.print('[bold red]Database not ready after 90 seconds. Check the configuration![/bold red]')
-            exit(1)
+                return
+
+            time.sleep(self.database_poll_interval)
+
+        self.console.print(
+            f'[bold red]Database not ready after {self.database_timeout} seconds. Check the configuration![/bold red]'
+        )
+        exit(1)
+
+    def __database_health_status(self) -> str:
+        result = subprocess.run(
+            ['docker', 'inspect', '--format', '{{.State.Health.Status}}', str(self.container_db)],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True
+        )
+
+        return result.stdout.strip() if result.returncode == 0 else 'unknown'
 
     def is_environment_appropriate(self) -> None:
         configuration = dotenv_values('.env')

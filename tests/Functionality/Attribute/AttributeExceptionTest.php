@@ -28,6 +28,7 @@ final class AttributeExceptionTest extends KernelTestCase
 
     private MapperInterface $mapper;
 
+    #[\Override]
     protected function setUp(): void
     {
         parent::setUp();
@@ -37,6 +38,7 @@ final class AttributeExceptionTest extends KernelTestCase
         $this->mapper = $this->getContainer()->get(MapperInterface::class);
     }
 
+    #[\Override]
     protected function tearDown(): void
     {
         parent::tearDown();

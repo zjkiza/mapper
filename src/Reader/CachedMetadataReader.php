@@ -29,9 +29,10 @@ final readonly class CachedMetadataReader implements MetadataReaderInterface, Re
      * @throws \ReflectionException
      * @throws InvalidArgumentException
      */
+    #[\Override]
     public function getMetadata(object|string $dto): Metadata
     {
-        /** @var class-string $dtoClassString */
+        /** @var class-string<T> $dtoClassString */
         $dtoClassString = \is_object($dto) ? $dto::class : $dto;
 
         $item = $this->cache->getItem(
@@ -70,6 +71,7 @@ final readonly class CachedMetadataReader implements MetadataReaderInterface, Re
         return $metadata;
     }
 
+    #[\Override]
     public function reset(): void
     {
         if ($this->cache instanceof ResetInterface) {

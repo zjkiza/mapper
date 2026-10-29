@@ -23,8 +23,8 @@ interface MapperInterface
     /**
      * @template T of object
      *
-     * @param iterable<object>  $collections
-     * @param T|class-string<T> $target
+     * @param iterable<int|string, object> $collections
+     * @param T|class-string<T>            $target
      *
      * @return array<int, T>
      */
@@ -33,8 +33,8 @@ interface MapperInterface
     /**
      * @template T of object
      *
-     * @param iterable<object>  $collections
-     * @param T|class-string<T> $target
+     * @param iterable<int|string, object> $collections
+     * @param T|class-string<T>            $target
      *
      * @return \Generator<int, T, mixed, void>
      */

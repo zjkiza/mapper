@@ -29,6 +29,7 @@ final class MetadataReader implements MetadataReaderInterface, ResetInterface
      *
      * @throws \ReflectionException
      */
+    #[\Override]
     public function getMetadata(object|string $dto): Metadata
     {
         $dtoClassString = \is_object($dto) ? $dto::class : $dto;
@@ -43,6 +44,7 @@ final class MetadataReader implements MetadataReaderInterface, ResetInterface
         return $metadata;
     }
 
+    #[\Override]
     public function reset(): void
     {
         self::$cache = [];

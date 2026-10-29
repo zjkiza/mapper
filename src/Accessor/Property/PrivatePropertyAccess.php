@@ -10,6 +10,7 @@ use Zjk\DtoMapper\Utils\ReflectionUtils;
 
 final class PrivatePropertyAccess implements PropertyAccessInterface
 {
+    #[\Override]
     public function getValue(object $object, Property $property): mixed
     {
         $reflectionProperty = ReflectionUtils::getAccessProperty($object, $property->getName());
@@ -17,6 +18,7 @@ final class PrivatePropertyAccess implements PropertyAccessInterface
         return $reflectionProperty->isInitialized($object) ? $reflectionProperty->getValue($object) : null;
     }
 
+    #[\Override]
     public function setValue(object $object, Property $property, mixed $value): void
     {
         $reflectionProperty = ReflectionUtils::getAccessProperty($object, $property->getName());

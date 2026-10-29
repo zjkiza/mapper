@@ -31,6 +31,7 @@ final class Transformer implements TransformerInterface
         $this->transformers = $transformers instanceof \Traversable ? \iterator_to_array($transformers, false) : $transformers;
     }
 
+    #[\Override]
     public function transform(object $entity, Property $property): mixed
     {
         $value = $this->defaultAccessor->callGetter($entity, $property);
@@ -50,6 +51,7 @@ final class Transformer implements TransformerInterface
         return $transformValue;
     }
 
+    #[\Override]
     public function reverse(object $dto, Property $property): mixed
     {
         $value = $this->defaultAccessor->getValue($dto, $property);

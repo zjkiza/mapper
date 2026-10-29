@@ -2,6 +2,37 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.9.0]
+
+### Fixed
+- Command `bin/run.py` failed with `failed to get console: provided file is not a console`.
+- Option `--verbose` of the `bin` scripts did not display the output of the docker compose.
+- Abandoned package `composer/package-versions-deprecated` is no longer installed in the development environment.
+- Composer could not detect the root package version in the docker container.
+
+### Added
+- Add support for Symfony 8 (`symfony/dependency-injection`, `symfony/config`, `symfony/console`, `symfony/http-kernel` ^8.0).
+- Add support for `doctrine/persistence` ^4.
+- Add GitHub Actions workflow with a test matrix (PHP 8.2 - 8.5, Symfony 6.4, 7.4 and 8.1, lowest dependencies) and a static analysis job.
+- Add `phpstan/phpstan-strict-rules` to the static analysis.
+- Add services `FullCollectionBuilder` and `RepositoryRelationMapper` extracted from `SingleDtoToEntityMapper`.
+- Add supported versions table to the README.
+
+### Changed
+- Move service definitions from XML (`services.xml`, `cache_services.xml`) to PHP (`services.php`, `cache_services.php`),
+  because the XML configuration format is deprecated since Symfony 7.4. Service ids and aliases are not changed.
+- `Zjk\DtoMapper\DependencyInjection\Extension` extends `Symfony\Component\DependencyInjection\Extension\Extension`
+  because `Symfony\Component\HttpKernel\DependencyInjection\Extension` is not available in the newest Symfony versions.
+- `SingleDtoToEntityMapper` has a new constructor, `RelationResolver` is replaced with `RepositoryRelationMapper`
+  (the class is an internal service, it is wired by the bundle).
+- `RelationResolver` throws `Zjk\DtoMapper\Exception\RuntimeException` when the add or remove method of the relation does not exist or is not public.
+- Parameter `$collections` of `MapperInterface::fromCollectionDtoToEntity()` and `fromCollectionDtoToEntityLazy()` is documented as `iterable<int|string, object>`.
+- `ThrowIfTrait::throwIf()` accepts only a boolean condition.
+- Development environment: PHP 8.4 docker image, PHPUnit 13 (the tests run on PHPUnit 11.5 - 13), Psalm 6, PHPMD 3, `docker compose` instead of `docker-compose`,
+  MySQL health check instead of waiting in a loop.
+- PHPUnit fails on deprecations triggered by the project code.
+- Rector configuration is updated for Rector 2.
+
 ## [0.8.0]
 
 ### Fixed

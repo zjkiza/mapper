@@ -3,8 +3,6 @@ from typing import Final, Optional
 container_php: Final[str] = 'php_bundle_1'
 container_db: Optional[str] = 'mysql_bundle_1'
 
-ping_db: Optional[str] = 'mysqladmin ping -h localhost --silent'
-
 waiting_db_connection: Final[bool] = True
 phpunit_code_error_bypass: Final[bool] = False
 

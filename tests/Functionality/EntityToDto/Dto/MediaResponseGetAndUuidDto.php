@@ -12,7 +12,7 @@ use Zjk\DtoMapper\Tests\Resources\App\Entities\Media;
 use Zjk\DtoMapper\Transformer\UuidTransformer;
 
 #[Entity(name: Media::class)]
-class MediaResponseGetAndUuidDto
+final class MediaResponseGetAndUuidDto
 {
     #[Transformer(name: UuidTransformer::class)]
     public ?string $id = null;

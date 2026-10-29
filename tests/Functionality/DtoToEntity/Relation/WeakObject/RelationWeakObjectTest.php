@@ -18,6 +18,7 @@ final class RelationWeakObjectTest extends KernelTestCase
 
     private MapperInterface $mapper;
 
+    #[\Override]
     protected function setUp(): void
     {
         parent::setUp();
@@ -27,6 +28,7 @@ final class RelationWeakObjectTest extends KernelTestCase
         $this->mapper = $this->getContainer()->get(MapperInterface::class);
     }
 
+    #[\Override]
     protected function tearDown(): void
     {
         parent::tearDown();

@@ -10,6 +10,7 @@ use Zjk\DtoMapper\Utils\ReflectionUtils;
 
 final class PrivateMethodAccess implements MethodAccessorInterface
 {
+    #[\Override]
     public function callGetter(object $object, Property $property): mixed
     {
         $reflectionMethod = ReflectionUtils::getAccessMethod($object, $property->getGetter());
@@ -17,6 +18,7 @@ final class PrivateMethodAccess implements MethodAccessorInterface
         return $reflectionMethod->invoke($object);
     }
 
+    #[\Override]
     public function callSetter(object $object, Property $property, mixed $value): void
     {
         $reflectionMethod = ReflectionUtils::getAccessMethod($object, $property->getSetter());

@@ -10,6 +10,11 @@ parameters:
         - tests/Functionality/DtoToEntity/Edit/Dto/*
         - tests/Functionality/DtoToEntity/Create/Dto/*
     level: max
+    ignoreErrors:
+        # PHPUnit assertions are called as "$this->assert*()" in tests
+        -
+            identifier: staticMethod.dynamicCall
+            path: tests/*
     bootstrapFiles:
         - phpstan.bootstrap.php
     symfony:
@@ -19,3 +24,4 @@ includes:
     - vendor/phpstan/phpstan-phpunit/rules.neon
     - vendor/phpstan/phpstan-symfony/extension.neon
     - vendor/phpstan/phpstan-symfony/rules.neon
+    - vendor/phpstan/phpstan-strict-rules/rules.neon

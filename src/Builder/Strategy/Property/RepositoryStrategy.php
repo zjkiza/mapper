@@ -15,6 +15,7 @@ use Zjk\DtoMapper\Metadata\RepositoryMetadata;
 
 final class RepositoryStrategy implements PropertyStrategyInterface
 {
+    #[\Override]
     public function build(PropertyBuilder $builder, AttributeInterface $attributeInstance, EntityMetadata $entityMetadata): void
     {
         \assert($attributeInstance instanceof RepositoryClass);
@@ -41,6 +42,7 @@ final class RepositoryStrategy implements PropertyStrategyInterface
         );
     }
 
+    #[\Override]
     public function key(): string
     {
         return RepositoryClass::class;

@@ -15,12 +15,21 @@ services:
         MYSQL_DATABASE: developer
       volumes:
         - ./docker/mysql/init:/docker-entrypoint-initdb.d
+      healthcheck:
+        test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root -p$$MYSQL_ROOT_PASSWORD --silent"]
+        interval: 5s
+        timeout: 5s
+        retries: 30
+        start_period: 10s
       restart: on-failure
       networks:
         - docker-core-bundle-1
 
     php_bundle_1:
         restart: on-failure
+        depends_on:
+            mysql_bundle_1:
+                condition: service_healthy
         build:
             context: .
             dockerfile: ./docker/php/Dockerfile

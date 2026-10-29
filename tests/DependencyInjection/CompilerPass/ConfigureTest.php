@@ -29,6 +29,7 @@ final class ConfigureTest extends AbstractCompilerPassTestCase
         ]);
     }
 
+    #[\Override]
     protected function registerCompilerPass(ContainerBuilder $container): void
     {
         $container->addCompilerPass(new TransformerCompilerPass());

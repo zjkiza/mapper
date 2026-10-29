@@ -20,8 +20,10 @@ use Zjk\DtoMapper\Contract\TransformerInterface;
 use Zjk\DtoMapper\Mapper;
 use Zjk\DtoMapper\Mapping\CollectionMapper;
 use Zjk\DtoMapper\Mapping\EntityFactory;
+use Zjk\DtoMapper\Mapping\FullCollectionBuilder;
 use Zjk\DtoMapper\Mapping\IdentifierResolver;
 use Zjk\DtoMapper\Mapping\RelationResolver;
+use Zjk\DtoMapper\Mapping\RepositoryRelationMapper;
 use Zjk\DtoMapper\Mapping\SingleDtoToEntityMapper;
 use Zjk\DtoMapper\Mapping\SingleEntityToDtoMapper;
 use Zjk\DtoMapper\Reader\CachedMetadataReader;
@@ -94,7 +96,17 @@ final class ExtensionTest extends AbstractExtensionTestCase
 
         $this->assertContainerBuilderHasService(SingleEntityToDtoMapper::class, SingleEntityToDtoMapper::class);
         $this->assertContainerBuilderHasService(SingleDtoToEntityMapper::class, SingleDtoToEntityMapper::class);
+        $this->assertContainerBuilderHasServiceDefinitionWithArgument(SingleDtoToEntityMapper::class, 6, new Reference(RepositoryRelationMapper::class));
         $this->assertContainerBuilderHasService(RelationResolver::class, RelationResolver::class);
+
+        $this->assertContainerBuilderHasService(RepositoryRelationMapper::class, RepositoryRelationMapper::class);
+        $this->assertContainerBuilderHasServiceDefinitionWithArgument(RepositoryRelationMapper::class, 0, new Reference(DefaultAccessorInterface::class));
+        $this->assertContainerBuilderHasServiceDefinitionWithArgument(RepositoryRelationMapper::class, 1, new Reference(RelationResolver::class));
+        $this->assertContainerBuilderHasServiceDefinitionWithArgument(RepositoryRelationMapper::class, 2, new Reference(FullCollectionBuilder::class));
+
+        $this->assertContainerBuilderHasService(FullCollectionBuilder::class, FullCollectionBuilder::class);
+        $this->assertContainerBuilderHasServiceDefinitionWithArgument(FullCollectionBuilder::class, 0, new Reference(EntityFactory::class));
+        $this->assertContainerBuilderHasServiceDefinitionWithArgument(FullCollectionBuilder::class, 1, new Reference(IdentifierResolver::class));
         $this->assertContainerBuilderHasService(CollectionMapper::class, CollectionMapper::class);
 
         $this->assertContainerBuilderHasServiceDefinitionWithArgument(Mapper::class, 0, new Reference(SingleEntityToDtoMapper::class));
@@ -154,6 +166,7 @@ final class ExtensionTest extends AbstractExtensionTestCase
         $this->assertTrue($autoconfigured[EntityStrategyInterface::class]->hasTag('zjk_dto_mapper.entity_strategy'));
     }
 
+    #[\Override]
     protected function getContainerExtensions(): array
     {
         return [

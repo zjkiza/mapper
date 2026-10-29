@@ -15,6 +15,7 @@ final class EditEntityTest extends KernelTestCase
 {
     private MapperInterface $mapper;
 
+    #[\Override]
     protected function setUp(): void
     {
         parent::setUp();

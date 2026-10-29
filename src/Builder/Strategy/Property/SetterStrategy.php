@@ -13,6 +13,7 @@ use Zjk\DtoMapper\Metadata\EntityMetadata;
 
 final class SetterStrategy implements PropertyStrategyInterface
 {
+    #[\Override]
     public function build(PropertyBuilder $builder, AttributeInterface $attributeInstance, EntityMetadata $entityMetadata): void
     {
         \assert($attributeInstance instanceof Setter);
@@ -24,6 +25,7 @@ final class SetterStrategy implements PropertyStrategyInterface
         $builder->setSetter($attributeInstance->methodName);
     }
 
+    #[\Override]
     public function key(): string
     {
         return Setter::class;

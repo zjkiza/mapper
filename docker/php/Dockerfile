@@ -1,8 +1,9 @@
-FROM php:8.3-cli
+FROM php:8.4-cli
 
 RUN apt-get update --fix-missing
 RUN apt-get update && apt-get install -y \
     curl \
+    git \
     gettext \
     openssl \
     openssh-client \
@@ -101,6 +102,9 @@ RUN ssh-keyscan github.com >> /root/.ssh/known_hosts
 
 WORKDIR /www
 COPY --chown=${LOCAL_USER} . /www
+
+# The project is mounted as a volume owned by another user, without this git (and composer root version detection) fails
+RUN git config --global --add safe.directory /www
 
 #################################
 #                               #

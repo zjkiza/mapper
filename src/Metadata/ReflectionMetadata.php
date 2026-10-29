@@ -76,6 +76,7 @@ final class ReflectionMetadata implements ResetInterface
         return Metadata::create($entityMetadata, $reflectionClass->getName(), $dtoProperty);
     }
 
+    #[\Override]
     public function reset(): void
     {
         $this->dtosMetadata = [];

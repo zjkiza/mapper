@@ -11,6 +11,7 @@ use Zjk\DtoMapper\Exception\TransformationFailedException;
 
 final class UuidTransformer implements DataTransformerInterface
 {
+    #[\Override]
     public function transform(mixed $value): ?string
     {
         if (null === $value) {
@@ -24,6 +25,7 @@ final class UuidTransformer implements DataTransformerInterface
         throw TransformationFailedException::transform($value, $this);
     }
 
+    #[\Override]
     public function reverse(mixed $value): ?UuidInterface
     {
         if (null === $value) {

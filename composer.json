@@ -14,11 +14,11 @@
     "doctrine/orm": "^2.17 || ^3",
     "doctrine/collections": "^1.5 || ^2.1",
     "ramsey/uuid-doctrine": "^2.0",
-    "doctrine/persistence": "^2.4 || ^3",
-    "symfony/dependency-injection": "^5.4 || ^6.0 || ^7.0",
-    "symfony/config": "^5.4 || ^6.0 || ^7.0",
-    "symfony/console": "^5.4 || ^6.0 || ^7.0",
-    "symfony/http-kernel": "^5.4 || ^6.0 || ^7.0"
+    "doctrine/persistence": "^2.4 || ^3 || ^4",
+    "symfony/dependency-injection": "^5.4 || ^6.0 || ^7.0 || ^8.0",
+    "symfony/config": "^5.4 || ^6.0 || ^7.0 || ^8.0",
+    "symfony/console": "^5.4 || ^6.0 || ^7.0 || ^8.0",
+    "symfony/http-kernel": "^5.4 || ^6.0 || ^7.0 || ^8.0"
   },
   "autoload": {
       "psr-4": {
@@ -37,23 +37,25 @@
     ]
   },
   "require-dev": {
-    "symfony/phpunit-bridge": "^6.0",
-    "phpunit/phpunit": "^9.6",
-    "matthiasnoback/symfony-dependency-injection-test": "^5.1",
+    "symfony/phpunit-bridge": "^7.4 || ^8.0",
+    "phpunit/phpunit": "^11.5 || ^12.0 || ^13.0",
+    "matthiasnoback/symfony-dependency-injection-test": "^6.0",
     "friendsofphp/php-cs-fixer": "^3.52",
-    "symfony/framework-bundle": "^7.0",
-    "doctrine/doctrine-bundle": "^2.12",
-    "doctrine/doctrine-fixtures-bundle": "^3.5",
-    "dama/doctrine-test-bundle": "^8.0",
-    "symfony/property-info": "^7.0",
+    "symfony/framework-bundle": "^6.4 || ^7.0 || ^8.0",
+    "doctrine/doctrine-bundle": "^2.12 || ^3.3",
+    "doctrine/data-fixtures": "^1.7 || ^2.0",
+    "doctrine/doctrine-fixtures-bundle": "^3.5 || ^4.3",
+    "dama/doctrine-test-bundle": "^8.4",
+    "symfony/property-info": "^6.4 || ^7.0 || ^8.0",
     "phpstan/phpstan": "^2.0",
     "phpstan/phpstan-phpunit": "^2.0",
     "phpstan/phpstan-symfony": "^2.0",
     "rector/rector": "^2.1.4",
-    "vimeo/psalm": "^5.24",
-    "psalm/plugin-phpunit": "^0.19.0",
-    "phpmd/phpmd": "^2.15",
-    "psalm/plugin-symfony": "^5.2"
+    "vimeo/psalm": "^6.10",
+    "psalm/plugin-phpunit": "^0.19.5",
+    "phpmd/phpmd": "^3.0",
+    "psalm/plugin-symfony": "^5.2",
+    "phpstan/phpstan-strict-rules": "^2.1"
   },
   "scripts": {
     "phpunit": "XDEBUG_MODE=coverage vendor/bin/phpunit --testdox --coverage-html ./build/phpunit",
@@ -61,6 +63,9 @@
     "psalm": "vendor/bin/psalm --threads=8 --no-diff --no-cache",
     "rector": "vendor/bin/rector",
     "php-cs-fixer": "vendor/bin/php-cs-fixer fix --diff --verbose --show-progress=dots --allow-risky=yes",
-    "phpmd": "vendor/bin/phpmd src xml phpmd.xml --reportfile build/phpmd/phpmd.xml&vendor/bin/phpmd src html phpmd.xml --reportfile build/phpmd/phpmd.html"
+    "phpmd": [
+      "@php -r \"is_dir('build/phpmd') || mkdir('build/phpmd', 0777, true);\"",
+      "vendor/bin/phpmd analyze src --ruleset phpmd.xml --reportfile-xml build/phpmd/phpmd.xml --reportfile-html build/phpmd/phpmd.html"
+    ]
   }
 }

@@ -13,6 +13,7 @@ use Zjk\DtoMapper\Metadata\TransformerMetadata;
 
 final class TransformerStrategy implements PropertyStrategyInterface
 {
+    #[\Override]
     public function build(PropertyBuilder $builder, AttributeInterface $attributeInstance, EntityMetadata $entityMetadata): void
     {
         \assert($attributeInstance instanceof Transformer);
@@ -22,6 +23,7 @@ final class TransformerStrategy implements PropertyStrategyInterface
         );
     }
 
+    #[\Override]
     public function key(): string
     {
         return Transformer::class;

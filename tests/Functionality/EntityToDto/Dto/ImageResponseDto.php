@@ -11,7 +11,7 @@ use Zjk\DtoMapper\Tests\Resources\App\Entities\Image;
 use Zjk\DtoMapper\Transformer\UpperTransformer;
 
 #[Entity(name: Image::class)]
-class ImageResponseDto
+final class ImageResponseDto
 {
     #[Getter(methodName: 'getIdentifier')]
     public ?string $id = null;
